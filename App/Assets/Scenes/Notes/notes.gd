@@ -1,8 +1,7 @@
 extends Item
 
-@onready var RichText: RichTextLabel = $Preview/Edit/Text
+@onready var RichText: RichTextLabel = $Text
 @onready var NotesText: CodeEdit = $ScrollContainer/Notes
-
 
 var Data: = {
 	"Type": "Notes", 
@@ -14,7 +13,8 @@ var Data: = {
 	"TitleOn": true, 
 	"NoteOn": true,
 	"FontSize" : Settings.DefaultFontSize,
-	"TitleSize": Settings.DefaultTtileSize
+	"TitleSize": Settings.DefaultTtileSize,
+	"ItemID" : ""
 }
 
 var Options := [
@@ -24,7 +24,6 @@ var Options := [
 ]
 
 var Editing := false
-var ClickedOnce := false
 
 func _ready() -> void :
 	initItem()
@@ -41,19 +40,37 @@ func _ready() -> void :
 		ChangeTitleSize(Data["TitleSize"])
 	else :
 		ChangeTitleSize(Settings.DefaultFontSize)
+		
+	for i in self.get_children(true):
+		for j in i.get_children(true):
+			if j.has_signal("mouse_entered"):
+				j.connect("mouse_entered", Callable(self, "MouseEntered"))
+				j.connect("mouse_exited", Callable(self, "MouseExited"))
 
+		if i.has_signal("mouse_entered"):
+			i.connect("mouse_entered", Callable(self, "MouseEntered"))
+			i.connect("mouse_exited", Callable(self, "MouseExited"))
 	User.connect("PreviewNotes", Callable(self, "PreviewNotes"))
+	User.connect("AllFocusLost", Callable(self, "_on_notes_focus_exited"))
+	User.connect("RecieveByID", Callable(self, "RecieveByID"))
+
+func MouseEntered():
+	if RichText.get_v_scroll_bar().max_value - RichText.size.y >= 0:
+		User.InFocus = true
+
+func MouseExited():
+	User.InFocus = false
 
 func ChangeTitleSize(value : int):
 	$Title.add_theme_font_size_override("font_size", value)
 	Data["TitleSize"] = value
 
 func ChangeFontSize(value : int):
-	$Preview/Edit/Text.add_theme_font_size_override("bold_font_size", value)
-	$Preview/Edit/Text.add_theme_font_size_override("bold_italics_font_size", value)
-	$Preview/Edit/Text.add_theme_font_size_override("italics_font_size", value)
-	$Preview/Edit/Text.add_theme_font_size_override("mono_font_size", value)
-	$Preview/Edit/Text.add_theme_font_size_override("normal_font_size", value)
+	RichText.add_theme_font_size_override("bold_font_size", value)
+	RichText.add_theme_font_size_override("bold_italics_font_size", value)
+	RichText.add_theme_font_size_override("italics_font_size", value)
+	RichText.add_theme_font_size_override("mono_font_size", value)
+	RichText.add_theme_font_size_override("normal_font_size", value)
 	Data["FontSize"] = value
 
 func _process(delta: float) -> void :
@@ -63,43 +80,17 @@ func _process(delta: float) -> void :
 	Data["Title"] = $Title.text
 	Data["TitleOn"] = $Title.visible
 	if !Editing:
-		Data["NoteOn"] = $Preview.visible
+		Data["NoteOn"] = RichText.visible
 		RichText.text = NotesText.text
-			
 	
 	if Input.is_action_just_pressed("Bold") and Input.is_action_pressed("Command") and Editing:
 		RichTextUpdate("b")
 
-
-func ExtraUI(view: bool):
-	$OptionsHolder.visible = view
-	$ExpandHolder.visible = view
-
-func _on_title_on_pressed() -> void :
-	$Title.visible = !$Title.visible
-
-func _on_note_on_pressed() -> void :
-	$Preview.visible = !$Preview.visible
-
-func _on_double_click_timeout() -> void:
-	ClickedOnce = false
-
 func EditNotes(GrabFocus = true):
-	if User.PreviewingNotes:
-		return
-	$Preview.visible = !Editing
+	RichText.visible = !Editing
 	$ScrollContainer.visible = Editing
 	if GrabFocus:
 		NotesText.grab_focus()
-
-func _on_edit_pressed() -> void:
-	if ClickedOnce:
-		ClickedOnce = false
-		Editing = true
-		EditNotes()
-	else :
-		ClickedOnce = true
-		$Preview/Edit/DoubleClick.start()
 
 func _on_notes_focus_exited() -> void:
 	Editing = false
@@ -109,14 +100,16 @@ func _on_text_focus_entered() -> void:
 	Editing = true
 	EditNotes(false)
 
-func PreviewNotes():
-	if User.PreviewingNotes:
-		RichText.mouse_filter = Control.MOUSE_FILTER_PASS
-	else :
-		RichText.mouse_filter = Control.MOUSE_FILTER_IGNORE
+func _on_text_meta_clicked(meta ) -> void:
+	meta = str(meta).split(':')
+	meta[0] = meta[0].to_lower()
+	if meta[0].begins_with("goto") and meta.size() >= 2:
+		User.emit_signal("SearchByID", meta[1])
+	else:
+		OS.shell_open(str(meta))
 
-func _on_text_meta_clicked(meta: Variant) -> void:
-	OS.shell_open(str(meta))
+func RecieveByID(Data : Dictionary):
+	System.GoTo({"ID" : Data["ID"], "Pos" : Data["Pos"]})
 
 func RichTextUpdate(text, additonal = ""):
 	if NotesText.get_selected_text():
@@ -132,7 +125,3 @@ func _on_text_meta_hover_started(meta: Variant) -> void:
 
 func _on_text_meta_hover_ended(meta: Variant) -> void:
 	RichText.tooltip_text = ""
-
-
-func _on_notes_code_completion_requested() -> void:
-	print("pass")

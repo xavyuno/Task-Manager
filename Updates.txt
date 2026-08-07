@@ -5,6 +5,22 @@ Changelog for: v1.7
 - Keybinds can be changed in settings under 'user'
 - backup save files can be found in the user directory under 'AutoSaves/'
 - Calendar: events can be added and saved
+- Replaced Background for a gradient
+- Foreground removed from canvas
+- Editing notes only requires one click instead of double clicking
+- focusing in and out of the window now saves, making saving more reliable
+- History only shows when items has been saved to history as supposed to showing all the time
+- Grid Snapping: Items can be snapped while moving and resizing with `shift`, the grid step can be changed in settings
+- Removed Preivew notes option
+- Complete search system overhaul:
+	Titles, IDs, Notes can be searched for all together within the search bar
+	Or individually searched for using the search query available, Title:, Note:, etc
+	Result will be shown and can be used to go to that specific item regardless of ID
+	hovering over a search result will show it's ID
+	` key to start searching without clicking on the search button
+	Every item has their own individual 'Item ID' now and can be searched for
+- Zooming in a note item that has a scroll bar is disabled (this is to allow for scrolling without zooming in/out)
+- Images within file items are cached and saved, so even if the directory of the image is deleted or changed, the image will still show
 - Removed I and O as keybinds for zooming in and out
 - Fixed input bar focus lost after pressing enter
 - Fixed drag selecting while in canvas/placing an item
@@ -13,6 +29,9 @@ Changelog for: v1.7
 - Fixed some parts of item selecting not being as smooth or responding
 - Fixed item count not being well... counted
 - Fixed drag and select box showing while in settings or calendar
+- Fixed note item scroll starting at bottom on startup
+- Fixed selection bar not showing/scaling with zoom level
+- Fixed newer values missing in items
 
 
 Changelog for: v1.6

@@ -3,8 +3,6 @@
 [ext_resource type="Script" uid="uid://dd4v0ireotg4s" path="res://App/Assets/Scenes/Notes/notes.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://8r3y5vbqek01" path="res://App/Components/CheckFocus/check_focus.tscn" id="6"]
 
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pocco"]
-
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5rxk8"]
 content_margin_left = 5.0
 content_margin_top = 5.0
@@ -13,7 +11,7 @@ content_margin_bottom = 5.0
 bg_color = Color(0, 0, 0, 0.392157)
 
 [node name="Note" type="VBoxContainer" unique_id=544251930]
-custom_minimum_size = Vector2(28, 27)
+custom_minimum_size = Vector2(32, 32)
 offset_right = 251.0
 offset_bottom = 176.0
 size_flags_horizontal = 3
@@ -28,45 +26,15 @@ placeholder_text = "Title"
 [node name="CheckFocus" parent="Title" unique_id=919617251 node_paths=PackedStringArray("par") instance=ExtResource("6")]
 par = NodePath("..")
 
-[node name="Preview" type="ScrollContainer" parent="." unique_id=1787003593]
-layout_mode = 2
-size_flags_vertical = 3
-follow_focus = true
-
-[node name="Edit" type="Button" parent="Preview" unique_id=1019144334]
+[node name="Text" type="RichTextLabel" parent="." unique_id=828533343]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-theme_override_styles/normal = SubResource("StyleBoxEmpty_pocco")
-theme_override_styles/normal_mirrored = SubResource("StyleBoxEmpty_pocco")
-theme_override_styles/pressed = SubResource("StyleBoxEmpty_pocco")
-theme_override_styles/pressed_mirrored = SubResource("StyleBoxEmpty_pocco")
-theme_override_styles/hover = SubResource("StyleBoxEmpty_pocco")
-theme_override_styles/hover_mirrored = SubResource("StyleBoxEmpty_pocco")
-theme_override_styles/hover_pressed = SubResource("StyleBoxEmpty_pocco")
-theme_override_styles/hover_pressed_mirrored = SubResource("StyleBoxEmpty_pocco")
-theme_override_styles/disabled = SubResource("StyleBoxEmpty_pocco")
-theme_override_styles/disabled_mirrored = SubResource("StyleBoxEmpty_pocco")
-theme_override_styles/focus = SubResource("StyleBoxEmpty_pocco")
-
-[node name="DoubleClick" type="Timer" parent="Preview/Edit" unique_id=385235438]
-wait_time = 0.5
-one_shot = true
-
-[node name="Text" type="RichTextLabel" parent="Preview/Edit" unique_id=828533343]
-show_behind_parent = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 focus_mode = 2
-mouse_filter = 2
+mouse_force_pass_scroll_events = false
 theme_override_styles/normal = SubResource("StyleBoxFlat_5rxk8")
 theme_override_styles/focus = SubResource("StyleBoxFlat_5rxk8")
 bbcode_enabled = true
-scroll_following = true
 context_menu_enabled = true
 threaded = true
 selection_enabled = true
@@ -97,11 +65,8 @@ auto_brace_completion_highlight_matching = true
 [node name="CheckFocus" parent="ScrollContainer/Notes" unique_id=356332501 node_paths=PackedStringArray("par") instance=ExtResource("6")]
 par = NodePath("..")
 
-[connection signal="pressed" from="Preview/Edit" to="." method="_on_edit_pressed"]
-[connection signal="timeout" from="Preview/Edit/DoubleClick" to="." method="_on_double_click_timeout"]
-[connection signal="focus_entered" from="Preview/Edit/Text" to="." method="_on_text_focus_entered"]
-[connection signal="meta_clicked" from="Preview/Edit/Text" to="." method="_on_text_meta_clicked"]
-[connection signal="meta_hover_ended" from="Preview/Edit/Text" to="." method="_on_text_meta_hover_ended"]
-[connection signal="meta_hover_started" from="Preview/Edit/Text" to="." method="_on_text_meta_hover_started"]
-[connection signal="code_completion_requested" from="ScrollContainer/Notes" to="." method="_on_notes_code_completion_requested"]
+[connection signal="focus_entered" from="Text" to="." method="_on_text_focus_entered"]
+[connection signal="meta_clicked" from="Text" to="." method="_on_text_meta_clicked"]
+[connection signal="meta_hover_ended" from="Text" to="." method="_on_text_meta_hover_ended"]
+[connection signal="meta_hover_started" from="Text" to="." method="_on_text_meta_hover_started"]
 [connection signal="focus_exited" from="ScrollContainer/Notes" to="." method="_on_notes_focus_exited"]

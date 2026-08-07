@@ -64,33 +64,3 @@ text = "preview"
 label_settings = SubResource("LabelSettings_0j5si")
 autowrap_mode = 3
 max_lines_visible = 10
-
-[node name="DirHolder" type="HBoxContainer" parent="." unique_id=328899775]
-visible = false
-layout_mode = 2
-
-[node name="FileName" type="LineEdit" parent="DirHolder" unique_id=1037095134]
-layout_mode = 2
-size_flags_horizontal = 3
-placeholder_text = "Directory"
-editable = false
-
-[node name="Dir" type="Button" parent="DirHolder" unique_id=773149587]
-self_modulate = Color(0, 0.972549, 0.701961, 1)
-layout_mode = 2
-text = ">"
-
-[node name="FileDialog" type="FileDialog" parent="." unique_id=500201390]
-title = "Open a File or Directory"
-popup_window = true
-extend_to_title = true
-ok_button_text = "Open"
-dialog_autowrap = true
-file_mode = 3
-access = 2
-show_hidden_files = true
-use_native_dialog = true
-
-[connection signal="pressed" from="Open" to="." method="_on_open_pressed"]
-[connection signal="pressed" from="DirHolder/Dir" to="." method="_on_dir_pressed"]
-[connection signal="file_selected" from="FileDialog" to="." method="_on_file_dialog_file_selected"]

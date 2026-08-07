@@ -1,6 +1,6 @@
 extends Control
 
-@onready var history: ItemList = $Holder / HistoryHolder / History
+@onready var history: ItemList = $Holder/History / HistoryHolder / History
 
 func _ready() -> void :
 	Init()
@@ -41,6 +41,8 @@ func Init():
 					Settings.SavedKeybinds.merge({j : []}, true)
 			if data.size() > 15:
 				User.SavedEvents = data[15]
+			ValidateValue(data, 16, "GridSize")
+			ValidateValue(data, 17, "GridCol")
 			
 	Settings.emit_signal("SettingsChanged")
 	User.emit_signal("ChangedOptionsBar")
@@ -171,22 +173,32 @@ func initObj(data, emit = false):
 
 func ObjAdded(data):
 	if User.RemovedHistory.is_empty():
+		UpdateHistory()
 		return
 	for i in User.RemovedHistory.size():
 		if User.RemovedHistory[i] == data:
 			User.RemovedHistory.remove_at(i)
 			history.remove_item(i)
+			UpdateHistory()
 			break
+
+func UpdateHistory():
+	if User.RemovedHistory.is_empty():
+		$Holder/History.visible = false
+	else:
+		$Holder/History.visible = true
 
 func ObjRemoved(data):
 	var img = get_node("Holder/ItemHolder/Items/" + data["Type"]).icon
 	history.add_item("Removed: " + JSON.stringify(data, "\t", false, true), img)
 	User.RemovedHistory.append(data)
 	if User.StoredHistory.is_empty():
+		UpdateHistory()
 		return
 	for i in User.StoredHistory.size():
 		if User.StoredHistory[i] == data:
 			User.StoredHistory.remove_at(i)
+			UpdateHistory()
 			break
 
 func _on_history_item_activated(index: int) -> void :
@@ -216,6 +228,7 @@ func _on_clear_pressed() -> void :
 	history.clear()
 	User.RemovedHistory.clear()
 	System.SaveRemoveHistory()
+	UpdateHistory()
 
 
 func _on_history_item_clicked(index: int, at_position: Vector2, mouse_button_index: int) -> void:
@@ -246,6 +259,7 @@ func _on_yes_pressed() -> void:
 			i.queue_free()
 	User.emit_signal("ChangeBoard", "Home")
 	$Holder/DeleteAll.visible = false
+	UpdateHistory()
 
 func _on_no_pressed() -> void:
 	$Holder/DeleteAll.visible = false

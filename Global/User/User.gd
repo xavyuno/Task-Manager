@@ -13,6 +13,13 @@ signal ItemFocused
 signal ItemFocusLost
 signal ChangedOptionsBar
 signal AllFocusLost
+signal SearchResultSend
+signal SearchByID
+signal RecieveByID
+
+var SearchQueries := ["Note:", "Title:", "ID:", "Board:", "Type:", "Dir:", "ItemID:"]
+var SearchResults := []
+var SearchSen := 0.5
 
 var OptionsEnabled := true
 

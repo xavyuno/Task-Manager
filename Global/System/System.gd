@@ -11,8 +11,15 @@ const EXTENSION = ".txt"
 const AUTOSAVELOC = "AutoSave/"
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_EXIT_TREE or what == NOTIFICATION_WM_CLOSE_REQUEST:
+	if (what == NOTIFICATION_EXIT_TREE) or (what == NOTIFICATION_WM_CLOSE_REQUEST) or (what == NOTIFICATION_WM_WINDOW_FOCUS_IN) or (what == NOTIFICATION_WM_WINDOW_FOCUS_OUT) or (what == NOTIFICATION_APPLICATION_FOCUS_IN):
+		SaveAll()
 		BackupAll()
+
+func GoTo(Info : Dictionary):
+	if Info["ID"] != "Home":
+		User.emit_signal("ChangeBoard", Info["ID"], User.Boards[Info["ID"]]["Title"], "", Info["Pos"])
+	else:
+		User.emit_signal("ChangeBoard", "Home", "Home", "", Info["Pos"])
 
 func SaveAll():
 	if User.TestingMode:

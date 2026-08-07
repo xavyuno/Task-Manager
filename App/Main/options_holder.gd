@@ -79,13 +79,14 @@ func ItemFocused(path : NodePath):
 	ItemNode = get_node(path)
 	Options = ItemNode.Options
 	for i in $Items.get_children():
-		if !i.name in ["Delete", "ID"]:
+		if !i.name in ["Delete", "ID", "ItemID"]:
 			i.visible = false
 	if Options.size() <= 0:
 		return
 	for i in Options.size():
 		get_node("Items/" + Options[i]).visible = true
 	ValidateValue($Items/ID, "ID", "text", GetValue("ID: ", "ID"))
+	ValidateValue($Items/ItemID, "ItemID", "text", GetValue("Item ID: ", "ItemID"))
 	ValidateValue($Items/Board, "Board", "value", GetValue("", "Board"))
 	ValidateValue($Items/FontSize, "FontSize", "value", GetValue("", "FontSize"))
 	ValidateValue($Items/TitleSize, "TitleSize", "value", GetValue("", "TitleSize"))
@@ -96,7 +97,7 @@ func GetValue(before, parameter, after = ""):
 		if before == "" and after == "":
 			return ItemNode.Data[parameter]
 		else :
-			return before + ItemNode.Data[parameter] + after
+			return before + str(ItemNode.Data[parameter]) + after
 	else :
 		return ""
 
@@ -127,7 +128,6 @@ func _on_title_size_value_changed(value: float) -> void:
 	ItemNode.ChangeTitleSize(value)
 
 func _on_file_dialog_file_selected(path: String) -> void:
-	ItemNode.get_node("DirHolder/FileName").text = path
 	ItemNode.Data["Dir"] = path
 	ItemNode.LoadFile()
 

@@ -2,7 +2,6 @@ extends Panel
 
 var selected := 0
 var Options := [
-	"Preview_Notes",
 	"Show_Center",
 	"Reset_Cam",
 	"Calendar"

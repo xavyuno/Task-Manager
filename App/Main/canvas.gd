@@ -1,4 +1,4 @@
-extends HFlowContainer
+extends HBoxContainer
 
 func _ready() -> void:
 	Settings.connect("SettingsChanged", Callable(self, "SettingsChanged"))
@@ -20,9 +20,9 @@ func _on_settings_pressed() -> void :
 func QuickOption(Index):
 	match Settings.QuickOptions[Index]:
 		"PreviewNotes":
-			User.PreviewingNotes = !User.PreviewingNotes
+			Settings.QuickOptions[Index] = "Calendar"
 		"OptionsBar":
-			Settings.QuickOptions[Index] = "PreviewNotes"
+			Settings.QuickOptions[Index] = "ShowCenter"
 		"ShowCenter":
 			Settings.ShowCenter = !Settings.ShowCenter
 		"ResetCam":

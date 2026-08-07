@@ -12,7 +12,7 @@ func GetData() -> Dictionary:
 	return self.Data
 
 func UpdateValues(NODE, value, parameter):
-	if self.Data.has(value):
+	if Has(value):
 		NODE.call_deferred("set", parameter, self.Data[value])
 
 # SELECT OBJECT CODE BELOW
@@ -31,8 +31,17 @@ var TimerNode : Timer = null
 var Col : CollisionPolygon2D = null
 var Body : StaticBody2D = null
 
+func Has(ITEM : String, CustomValue = null):
+	if self.Data.has(ITEM):
+		return self.Data[ITEM]
+	else:
+		self.Data.merge({ITEM : CustomValue}, true)
+		return self.Data[ITEM]
+
 func initItem():
 	User.TotalItems += 1
+	if str(Has("ItemID", "")) == "" or !(typeof(Has("ItemID", "")) == TYPE_STRING):
+		self.Data["ItemID"] = str(User.TotalItems)
 	TimerNode = Timer.new()
 	TimerNode.one_shot = true
 	TimerNode.wait_time = 0.5
@@ -48,6 +57,10 @@ func initItem():
 	User.connect("StoppedSelecting", Callable(self, "StoppedSelecting"))
 	User.connect("Searched", Callable(self, "Searched"))
 	User.connect("AllFocusLost", Callable(self, "AllFocusLost"))
+	User.connect("SearchByID", Callable(self, "SearchByID"))
+	
+	#dont even ask
+	
 	for i in self.get_children(true):
 		for j in i.get_children(true):
 			if j.has_signal("focus_entered"):
@@ -67,6 +80,10 @@ func initItem():
 			i.connect("button_up", Callable(self, "button_up"))
 			buttons.append(i)
 
+func SearchByID(ID : String):
+	if Has("ItemID", "") == ID:
+		User.emit_signal("RecieveByID", self.Data)
+
 func button_up():
 	if !StillHolding:
 		Holding = false
@@ -84,43 +101,49 @@ func button_down():
 		return
 	TimerNode.start()
 
-func Searched(itemName):
+var Found := false
+
+func Searched(itemName : String):
+	Found = false
 	if itemName == "":
 		visible = true
 		return
-	if ValidateSearch(itemName, "Type"):
-		visible = true
-	elif ValidateSearch(itemName, "Note"):
-		visible = true
-	elif ValidateSearch(itemName, "Title"):
-		visible = true
-	elif ValidateSearch(itemName, "Board"):
-		visible = true
-	elif ValidateSearch(itemName, "ID"):
-		visible = true
-	elif ValidateSearch(itemName, "List"):
-		visible = true
-	elif ValidateSearch(itemName, "Dir"):
-		visible = true
-	elif ValidateSearch(itemName, "Link"):
-		visible = true
-	elif ValidateSearch(itemName, "Items"):
-		visible = true
+	var Query = itemName.split(":", true, 1)
+	if Query.size() <= 1:
+		var NewQuery = User.SearchQueries
+		NewQuery.erase("Type:")
+		for i in NewQuery:
+			if SearchSimilarity(itemName, i.replace(":", "")):
+				visible = true
+				Found = true
+			else:
+				if !Found:
+					visible = false
+				else:
+					visible = true
+	else:
+		if Query[0] + ":" in User.SearchQueries:
+			visible = SearchSimilarity(Query[1], Query[0])
 
-	else :
-		visible = false
-
-func ValidateSearch(itemName : String, Type : String):
-	if !has_method("GetData"):
-		return
-	if self.Data.has(Type):
-		if itemName in self.Data[Type]:
-			return true
-		else :
+func SearchSimilarity(Search : String, Query : String):
+	var TempData : Dictionary = self.Data
+	if self.Data.has(Query):
+		var Temp : String = self.Data[Query]
+		Temp = Temp.to_lower()
+		if Temp.similarity(Search.to_lower()) >= User.SearchSen and !(TempData in User.SearchResults):
+			TempData.merge({"Search" : Temp}, true)
+			if TempData["ID"] != "Home":
+				if User.Boards[TempData["ID"]]["Title"] != "":
+					User.emit_signal("SearchResultSend", TempData)
+					return true
+				else:
+					return false
+			else:
+				User.emit_signal("SearchResultSend", TempData)
+				return true
+		else:
 			return false
-	elif self.Data[Type].similarity(itemName) >= 0.75:
-			return true
-	else :
+	else:
 		return false
 
 func StoppedSelecting():
@@ -133,9 +156,11 @@ func _draw() -> void:
 			Rect2(0, 0, size.x, size.y),
 			Settings.SelectCol,
 			false,
-			4,
+			4 / User.CamZoom.x,
 			true
 		)
+
+var InitialMousePos := Vector2.ZERO
 
 func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("SelectAll") and self.Data["ID"] == User.CurrentPage and !User.InFocus:
@@ -170,6 +195,7 @@ func _physics_process(delta: float) -> void:
 			Action = ""
 			Selected = false
 	if Input.is_action_just_pressed("Move") and Input.is_action_pressed("Command") and Selected:
+		InitialMousePos = position
 		if Action != "Moving":
 			Action = "Moving"
 		else :
@@ -195,15 +221,24 @@ func _physics_process(delta: float) -> void:
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion:
 		if Holding and !InColumn:
-			position += event.relative / User.CamZoom
+			position = MouseMove(event, position)
 			User.DragSelecting = false
 		if Action == "Moving" and !InColumn:
-			position += event.relative / User.CamZoom
+			position = MouseMove(event, position)
 		if Action == "Resizing":
 			if !InColumn:
-				size += event.relative / User.CamZoom
+				size = MouseMove(event, size)
 			else :
-				custom_minimum_size.y += event.relative.y / User.CamZoom.y
+				custom_minimum_size.y = MouseMove(event, size)
+
+func MouseMove(event : InputEventMouseMotion, vec):
+	var current_mouse = get_global_mouse_position()
+	var offset = current_mouse - vec
+	var NewPos = vec + (event.relative / User.CamZoom)
+	if Settings.GridSnap:
+		NewPos = vec + offset
+		NewPos = NewPos.snapped(Vector2(Settings.GridSize, Settings.GridSize))
+	return NewPos
 
 func FocusItem():
 	FocusEntered(true)

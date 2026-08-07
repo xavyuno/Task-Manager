@@ -7,7 +7,8 @@ var Data: = {
 	"Link": "", 
 	"ID": "Home",
 	"Thumbnail" : null,
-	"ThumbnailPath" : ""
+	"ThumbnailPath" : "",
+	"ItemID" : 0
 }
 
 var Options := [

@@ -17,6 +17,10 @@ var TotalBoards := 0
 var SelectCol := Color.BLACK
 var CanSelectCol := true
 var DragCol := Color.WHITE
+var GridSnap := false
+var GridSize := 16
+var GridCol := Color.WHITE
+
 var SavedKeybinds := {
 	"Bold" : [],
 	"Move" : [],
@@ -49,6 +53,8 @@ func GetSettings():
 		SelectCol,
 		CanSelectCol,
 		SavedKeybinds,
-		User.SavedEvents
+		User.SavedEvents,
+		GridSize,
+		GridCol
 
 	]

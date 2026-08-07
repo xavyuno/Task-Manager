@@ -11,7 +11,6 @@ var buttons := []
 
 func _ready() -> void :
 	User.connect("StoppedSelecting", Callable(self, "StoppedSelecting"))
-	User.connect("Searched", Callable(self, "Searched"))
 	for i in get_parent().get_children(true):
 		if i.get_child_count() >= 1:
 			for j in i.get_children(true):
@@ -40,49 +39,6 @@ func button_up():
 
 func button_down():
 	$Timer.start()
-
-func Searched(itemName):
-	if itemName == "":
-		Par.visible = true
-		return
-	if ValidateSearch(itemName, "Type"):
-		Par.visible = true
-	elif ValidateSearch(itemName, "Note"):
-		Par.visible = true
-	elif ValidateSearch(itemName, "Title"):
-		Par.visible = true
-	elif ValidateSearch(itemName, "Board"):
-		Par.visible = true
-	elif ValidateSearch(itemName, "ID"):
-		Par.visible = true
-	elif ValidateSearch(itemName, "List"):
-		Par.visible = true
-	elif ValidateSearch(itemName, "Dir"):
-		Par.visible = true
-	elif ValidateSearch(itemName, "Link"):
-		Par.visible = true
-	elif ValidateSearch(itemName, "Items"):
-		Par.visible = true
-
-	else :
-		Par.visible = false
-
-func ValidateSearch(itemName : String, Type : String):
-	if !Par.has_method("GetData"):
-		return
-	if Par.Data.has(Type):
-		if Par.Data is Dictionary or Par.Data is Array:
-			if itemName in Par.Data[Type]:
-				return true
-			else :
-				return false
-		else :
-			if Par.Data[Type].similarity(itemName) >= 0.8:
-				return true
-			else :
-				return false
-	else :
-		return false
 
 func StoppedSelecting():
 	Selected = false

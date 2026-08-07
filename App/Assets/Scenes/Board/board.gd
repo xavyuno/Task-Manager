@@ -8,7 +8,8 @@ var Data: = {
 	"Title": "", 
 	"ID": "Home", 
 	"Cover" : null,
-	"CamPos" : Vector2(640, 352)
+	"CamPos" : Vector2(640, 352),
+	"ItemID" : 0
 }
 
 var Options := ["Cover", "Board"]

@@ -1,2 +1,12 @@
 res://App/Main/main.tscn
-res://README.md
+res://App/Assets/Shaders/Grid.gdshader
+res://App/Assets/Scenes/NewBoard/NewBoard.tscn
+res://Global/User/User.gd
+res://App/Assets/Scenes/Notes/Notes.tscn
+res://App/Resources/Init/Item.gd
+res://App/Main/camera.gd
+res://Updates.txt
+res://App/Assets/Scenes/NewBoard/new_board.gd
+res://Global/System/Settings.gd
+res://App/Main/settings.gd
+res://App/Main/nodes.gd

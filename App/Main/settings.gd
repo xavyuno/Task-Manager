@@ -43,6 +43,7 @@ func SettingsChanged():
 	$Holder/User/SelectColor.color = Settings.SelectCol
 	$Holder/User/SelectColor/On.text = "On" if Settings.CanSelectCol else "Off"
 	$Holder/User/DragColor.color = Settings.DragCol
+	$Holder/User/GridCol.color = Settings.GridCol
 
 func _on_color_picker_button_color_changed(color: Color) -> void :
 	Settings.BackgroundCol = color
@@ -175,3 +176,12 @@ func _input(event: InputEvent) -> void:
 		ChangingKeybind = false
 		InputMap.action_add_event("Bold", event)
 		print(InputMap.action_get_events("Bold"))
+
+
+func _on_drag_color_2_color_changed(color: Color) -> void:
+	Settings.GridCol = color
+	Settings.emit_signal("SettingsChanged")
+
+
+func _on_grid_scale_value_changed(value: float) -> void:
+	Settings.GridSize = value * 16

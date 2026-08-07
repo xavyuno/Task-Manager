@@ -13,7 +13,8 @@ var Data: = {
 	"Title": "",
 	"FontSize" : Settings.DefaultFontSize,
 	"TitleSize": Settings.DefaultTtileSize,
-	"ShowProgress" : true
+	"ShowProgress" : true,
+	"ItemID" : 0
 }
 
 var Options := [

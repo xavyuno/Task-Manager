@@ -31,7 +31,16 @@
 [ext_resource type="Script" uid="uid://dc5f3s7hw57t6" path="res://App/Main/board_display.gd" id="25"]
 [ext_resource type="Script" uid="uid://cl7x5scpiyb04" path="res://App/Main/options_holder.gd" id="27_eab0n"]
 [ext_resource type="Texture2D" uid="uid://b8qv3t34e0md5" path="res://App/Assets/Icons/icons8-hide-32.png" id="28_b8p06"]
+[ext_resource type="Script" uid="uid://d05krwe7f5uof" path="res://App/Main/search.gd" id="30_eab0n"]
 [ext_resource type="Texture2D" uid="uid://ywymu6b41yok" path="res://App/Assets/Icons/icons8-home-32.png" id="31_iuq4y"]
+
+[sub_resource type="Gradient" id="Gradient_y8ose"]
+interpolation_mode = 2
+colors = PackedColorArray(0.13319641, 0.13319641, 0.13319638, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_dx7or"]
+gradient = SubResource("Gradient_y8ose")
+fill_to = Vector2(1, 1)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_yqhvp"]
 
@@ -117,14 +126,14 @@ position = Vector2(640, 352)
 script = ExtResource("1")
 metadata/_edit_group_ = true
 
-[node name="ClearFocus" type="ColorRect" parent="Camera" unique_id=1507019658]
+[node name="ClearFocus" type="TextureRect" parent="Camera" unique_id=855307631]
 show_behind_parent = true
 z_index = -1
-offset_left = -12424.0
-offset_top = -6104.0
-offset_right = 19384.0
-offset_bottom = 10280.0
-color = Color(0.425323, 0.41232, 0.415591, 1)
+offset_left = -640.0
+offset_top = -352.0
+offset_right = 640.0
+offset_bottom = 352.0
+texture = SubResource("GradientTexture2D_dx7or")
 
 [node name="Drag" type="Area2D" parent="Camera" unique_id=1854866221]
 
@@ -404,6 +413,23 @@ offset_right = 232.0
 offset_bottom = -3.0
 text = "Change Select drag color"
 
+[node name="GridCol" type="ColorPickerButton" parent="Boards/Settings/Holder/User" unique_id=842368602]
+layout_mode = 0
+offset_left = 728.0
+offset_top = 204.0
+offset_right = 1000.0
+offset_bottom = 246.0
+edit_alpha = false
+metadata/_edit_group_ = true
+
+[node name="BGInfo" type="Label" parent="Boards/Settings/Holder/User/GridCol" unique_id=1127503632]
+layout_mode = 0
+offset_left = 3.0
+offset_top = -23.0
+offset_right = 232.0
+offset_bottom = -3.0
+text = "Change Grid color"
+
 [node name="SelectColor" type="ColorPickerButton" parent="Boards/Settings/Holder/User" unique_id=1004771434]
 layout_mode = 0
 offset_left = 432.0
@@ -501,6 +527,17 @@ offset_top = 92.0
 offset_right = 1360.0
 offset_bottom = 124.0
 text = "Display Center:"
+
+[node name="GridScale" type="SpinBox" parent="Boards/Settings/Holder/User" unique_id=953949466]
+layout_mode = 0
+offset_left = 1008.0
+offset_top = 52.0
+offset_right = 1360.0
+offset_bottom = 84.0
+min_value = 1.0
+value = 1.0
+update_on_text_changed = true
+prefix = "Grid Scale"
 
 [node name="Update" type="Button" parent="Boards/Settings/Holder/User" unique_id=1300856312]
 self_modulate = Color(0, 0.972549, 0.701961, 1)
@@ -772,7 +809,7 @@ size_flags_vertical = 3
 theme_override_styles/normal = SubResource("StyleBoxFlat_qt3dg")
 theme_override_styles/focus = SubResource("StyleBoxFlat_qt3dg")
 bbcode_enabled = true
-text = "Loading Changelog..."
+text = "Failed to load changelog..."
 
 [node name="ToDo" type="VBoxContainer" parent="Boards/Settings" unique_id=1970658981]
 layout_mode = 0
@@ -982,6 +1019,7 @@ size_flags_stretch_ratio = 0.2
 script = ExtResource("7")
 
 [node name="BG" type="Panel" parent="UI/Nodes" unique_id=1399317985]
+visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -992,27 +1030,15 @@ grow_vertical = 2
 [node name="Holder" type="VBoxContainer" parent="UI/Nodes" unique_id=1999979547]
 layout_mode = 0
 offset_left = 8.0
-offset_top = 48.0
-offset_right = 160.0
+offset_top = 56.0
+offset_right = 168.0
 offset_bottom = 696.0
-
-[node name="Search" type="LineEdit" parent="UI/Nodes/Holder" unique_id=409646633]
-layout_mode = 2
-size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 11
-placeholder_text = "Search in Item"
-clear_button_enabled = true
-right_icon = ExtResource("12_iuq4y")
-
-[node name="CheckFocus" parent="UI/Nodes/Holder/Search" unique_id=1658876850 node_paths=PackedStringArray("par") instance=ExtResource("9_b8p06")]
-par = NodePath("..")
+theme_override_constants/separation = 0
 
 [node name="ItemHolder" type="ScrollContainer" parent="UI/Nodes/Holder" unique_id=1528949264]
 layout_mode = 2
 size_flags_vertical = 3
 size_flags_stretch_ratio = 0.6
-follow_focus = true
-draw_focus_border = true
 
 [node name="Items" type="VBoxContainer" parent="UI/Nodes/Holder/ItemHolder" unique_id=1610352376]
 layout_mode = 2
@@ -1166,25 +1192,32 @@ caret_blink = true
 [node name="ID" type="Label" parent="UI/Nodes/Holder/OptionsHolder/Items" unique_id=20887944]
 layout_mode = 2
 
-[node name="HistoryTitle" type="HBoxContainer" parent="UI/Nodes/Holder" unique_id=1187348715]
+[node name="ItemID" type="Label" parent="UI/Nodes/Holder/OptionsHolder/Items" unique_id=1453209487]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="UI/Nodes/Holder/HistoryTitle" unique_id=1194427213]
+[node name="History" type="VBoxContainer" parent="UI/Nodes/Holder" unique_id=1764659306]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="HistoryTitle" type="HBoxContainer" parent="UI/Nodes/Holder/History" unique_id=1187348715]
+layout_mode = 2
+
+[node name="Title" type="Label" parent="UI/Nodes/Holder/History/HistoryTitle" unique_id=1194427213]
 layout_mode = 2
 size_flags_horizontal = 3
 text = "History"
 horizontal_alignment = 1
 vertical_alignment = 1
 
-[node name="Clear" type="Button" parent="UI/Nodes/Holder/HistoryTitle" unique_id=1417363903]
+[node name="Clear" type="Button" parent="UI/Nodes/Holder/History/HistoryTitle" unique_id=1417363903]
 layout_mode = 2
 text = "Clear"
 
-[node name="HistoryHolder" type="ScrollContainer" parent="UI/Nodes/Holder" unique_id=1043571050]
+[node name="HistoryHolder" type="ScrollContainer" parent="UI/Nodes/Holder/History" unique_id=1043571050]
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="History" type="ItemList" parent="UI/Nodes/Holder/HistoryHolder" unique_id=483146235]
+[node name="History" type="ItemList" parent="UI/Nodes/Holder/History/HistoryHolder" unique_id=483146235]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -1206,9 +1239,9 @@ layout_mode = 2
 
 [node name="Warning" type="Label" parent="UI/Nodes/Holder/DeleteAll" unique_id=1040294257]
 layout_mode = 2
-text = "ARE YOU SURE?"
-horizontal_alignment = 1
-vertical_alignment = 1
+text = "ARE YOU SURE?
+This permanently deletes all items, history and settings. Can not be Undone."
+autowrap_mode = 2
 
 [node name="DeleteAll" type="HBoxContainer" parent="UI/Nodes/Holder/DeleteAll" unique_id=1533681573]
 layout_mode = 2
@@ -1236,21 +1269,22 @@ file_mode = 3
 access = 2
 use_native_dialog = true
 
-[node name="Canvas" type="HFlowContainer" parent="UI" unique_id=1349013959]
+[node name="Canvas" type="HBoxContainer" parent="UI" unique_id=870378712]
 clip_children = 2
 light_mask = 0
 offset_left = 8.0
 offset_top = 8.0
-offset_right = 160.0
-offset_bottom = 40.0
+offset_right = 168.0
+offset_bottom = 48.0
 size_flags_horizontal = 3
+size_flags_vertical = 3
 alignment = 1
-last_wrap_alignment = 2
 script = ExtResource("23")
 
 [node name="Close" type="Button" parent="UI/Canvas" unique_id=409667106]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
+size_flags_horizontal = 3
 tooltip_text = "Hide"
 icon = ExtResource("28_b8p06")
 icon_alignment = 1
@@ -1259,6 +1293,7 @@ expand_icon = true
 [node name="Settings" type="Button" parent="UI/Canvas" unique_id=118031734]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
+size_flags_horizontal = 3
 tooltip_text = "Settings"
 icon = ExtResource("24")
 icon_alignment = 1
@@ -1267,6 +1302,7 @@ expand_icon = true
 [node name="QuickOption1" type="Button" parent="UI/Canvas" unique_id=216327916]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "1"
 icon_alignment = 1
 expand_icon = true
@@ -1274,26 +1310,70 @@ expand_icon = true
 [node name="QuickOption2" type="Button" parent="UI/Canvas" unique_id=1067762448]
 custom_minimum_size = Vector2(32, 32)
 layout_mode = 2
+size_flags_horizontal = 3
 text = "2"
 icon_alignment = 1
 expand_icon = true
 
-[node name="BoardDisplay" type="HBoxContainer" parent="UI" unique_id=1215576033]
-anchors_preset = -1
-anchor_left = 0.788531
-anchor_right = 0.999563
-anchor_bottom = 0.0453636
-offset_left = -9.32007
+[node name="Holder" type="HBoxContainer" parent="UI" unique_id=2096925899]
+custom_maximum_size = Vector2(-1, 688)
+offset_left = 176.0
 offset_top = 8.0
-offset_right = -8.44006
-offset_bottom = 8.064
-grow_horizontal = 0
+offset_right = 1272.0
+offset_bottom = 48.0
+
+[node name="Search" type="VBoxContainer" parent="UI/Holder" unique_id=71922186]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+script = ExtResource("30_eab0n")
+
+[node name="Input" type="LineEdit" parent="UI/Holder/Search" unique_id=334374246]
+layout_mode = 2
+size_flags_vertical = 0
+placeholder_text = "Search in items"
+clear_button_enabled = true
+right_icon = ExtResource("12_iuq4y")
+
+[node name="CheckFocus" parent="UI/Holder/Search/Input" unique_id=1183702671 node_paths=PackedStringArray("par") instance=ExtResource("9_b8p06")]
+par = NodePath("..")
+
+[node name="SearchQuery" type="HBoxContainer" parent="UI/Holder/Search" unique_id=217807215]
+visible = false
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="Sen" type="SpinBox" parent="UI/Holder/Search/SearchQuery" unique_id=1714914636]
+custom_minimum_size = Vector2(266, 0)
+layout_mode = 2
+min_value = 0.1
+max_value = 1.0
+step = 0.1
+value = 0.5
+update_on_text_changed = true
+prefix = "Search Sensitivity:"
+
+[node name="Results" type="HFlowContainer" parent="UI/Holder/Search" unique_id=744623536]
+visible = false
+clip_children = 1
+layout_mode = 2
+size_flags_vertical = 3
+last_wrap_alignment = 1
+
+[node name="Title" type="Label" parent="UI/Holder/Search/Results" unique_id=2078582499]
+layout_mode = 2
+text = "Results: "
+
+[node name="BoardDisplay" type="HBoxContainer" parent="UI/Holder" unique_id=1215576033]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+size_flags_vertical = 0
 theme_override_constants/separation = 2
 alignment = 2
 script = ExtResource("25")
 metadata/_edit_use_anchors_ = true
 
-[node name="Home" type="Button" parent="UI/BoardDisplay" unique_id=1999460622]
+[node name="Home" type="Button" parent="UI/Holder/BoardDisplay" unique_id=1999460622]
 custom_minimum_size = Vector2(20, 20)
 layout_mode = 2
 size_flags_horizontal = 0
@@ -1313,7 +1393,7 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_etqv4")
 text = "Home/"
 icon = ExtResource("31_iuq4y")
 
-[node name="Previous" type="Button" parent="UI/BoardDisplay" unique_id=724270379]
+[node name="Previous" type="Button" parent="UI/Holder/BoardDisplay" unique_id=724270379]
 layout_mode = 2
 size_flags_horizontal = 0
 size_flags_vertical = 4
@@ -1330,7 +1410,7 @@ theme_override_styles/disabled_mirrored = SubResource("StyleBoxFlat_etqv4")
 theme_override_styles/focus = SubResource("StyleBoxFlat_etqv4")
 text = "Home/"
 
-[node name="NewBoard" type="Label" parent="UI/BoardDisplay" unique_id=1434424625]
+[node name="NewBoard" type="Label" parent="UI/Holder/BoardDisplay" unique_id=1434424625]
 layout_mode = 2
 size_flags_horizontal = 0
 text = "Untiled Board"
@@ -1350,6 +1430,7 @@ text = "Untiled Board"
 [connection signal="request_completed" from="Boards/Settings/Holder/User/Feedback/SubmitFeedback/SubmitReq" to="Boards/Settings" method="_on_submit_req_request_completed"]
 [connection signal="color_changed" from="Boards/Settings/Holder/User/BGPicker" to="Boards/Settings" method="_on_color_picker_button_color_changed"]
 [connection signal="color_changed" from="Boards/Settings/Holder/User/DragColor" to="Boards/Settings" method="_on_drag_color_color_changed"]
+[connection signal="color_changed" from="Boards/Settings/Holder/User/GridCol" to="Boards/Settings" method="_on_drag_color_2_color_changed"]
 [connection signal="color_changed" from="Boards/Settings/Holder/User/SelectColor" to="Boards/Settings" method="_on_bg_picker_2_color_changed"]
 [connection signal="pressed" from="Boards/Settings/Holder/User/SelectColor/On" to="Boards/Settings" method="_on_on_pressed"]
 [connection signal="pressed" from="Boards/Settings/Holder/User/ProjectDir" to="Boards/Settings" method="_on_project_dir_pressed"]
@@ -1357,6 +1438,7 @@ text = "Untiled Board"
 [connection signal="text_changed" from="Boards/Settings/Holder/User/DisplayURL/Key" to="Boards/Settings/Holder/User/DisplayURL" method="_on_key_text_changed"]
 [connection signal="pressed" from="Boards/Settings/Holder/User/DisplayURL/Hide" to="Boards/Settings/Holder/User/DisplayURL" method="_on_hide_pressed"]
 [connection signal="pressed" from="Boards/Settings/Holder/User/Center" to="Boards/Settings" method="_on_center_pressed"]
+[connection signal="value_changed" from="Boards/Settings/Holder/User/GridScale" to="Boards/Settings" method="_on_grid_scale_value_changed"]
 [connection signal="pressed" from="Boards/Settings/Holder/User/Update" to="Boards/Settings" method="_on_update_pressed"]
 [connection signal="request_completed" from="Boards/Settings/Holder/User/Update/Download" to="Boards/Settings" method="_on_download_request_completed"]
 [connection signal="request_completed" from="Boards/Settings/Holder/User/Update/GetVersion" to="Boards/Settings" method="_on_get_version_request_completed"]
@@ -1369,15 +1451,13 @@ text = "Untiled Board"
 [connection signal="item_selected" from="Boards/Calendar/Main/Month" to="Boards/Calendar" method="_on_month_item_selected"]
 [connection signal="value_changed" from="Boards/Calendar/Main/Year" to="Boards/Calendar" method="_on_year_value_changed"]
 [connection signal="pressed" from="Boards/Calendar/Config/InputHolder/Add" to="Boards/Calendar" method="_on_add_pressed"]
-[connection signal="text_changed" from="UI/Nodes/Holder/Search" to="UI/Nodes" method="_on_search_text_changed"]
-[connection signal="text_submitted" from="UI/Nodes/Holder/Search" to="UI/Nodes" method="_on_search_text_submitted"]
 [connection signal="value_changed" from="UI/Nodes/Holder/OptionsHolder/Items/Board" to="UI/Nodes/Holder/OptionsHolder" method="_on_board_value_changed"]
 [connection signal="value_changed" from="UI/Nodes/Holder/OptionsHolder/Items/FontSize" to="UI/Nodes/Holder/OptionsHolder" method="_on_font_size_value_changed"]
 [connection signal="value_changed" from="UI/Nodes/Holder/OptionsHolder/Items/TitleSize" to="UI/Nodes/Holder/OptionsHolder" method="_on_title_size_value_changed"]
 [connection signal="focus_exited" from="UI/Nodes/Holder/OptionsHolder/Items/Link" to="UI/Nodes/Holder/OptionsHolder" method="_on_link_focus_exited"]
-[connection signal="pressed" from="UI/Nodes/Holder/HistoryTitle/Clear" to="UI/Nodes" method="_on_clear_pressed"]
-[connection signal="item_activated" from="UI/Nodes/Holder/HistoryHolder/History" to="UI/Nodes" method="_on_history_item_activated"]
-[connection signal="item_clicked" from="UI/Nodes/Holder/HistoryHolder/History" to="UI/Nodes" method="_on_history_item_clicked"]
+[connection signal="pressed" from="UI/Nodes/Holder/History/HistoryTitle/Clear" to="UI/Nodes" method="_on_clear_pressed"]
+[connection signal="item_activated" from="UI/Nodes/Holder/History/HistoryHolder/History" to="UI/Nodes" method="_on_history_item_activated"]
+[connection signal="item_clicked" from="UI/Nodes/Holder/History/HistoryHolder/History" to="UI/Nodes" method="_on_history_item_clicked"]
 [connection signal="pressed" from="UI/Nodes/Holder/Delete" to="UI/Nodes" method="_on_delete_pressed"]
 [connection signal="pressed" from="UI/Nodes/Holder/DeleteAll/DeleteAll/Yes" to="UI/Nodes" method="_on_yes_pressed"]
 [connection signal="pressed" from="UI/Nodes/Holder/DeleteAll/DeleteAll/No" to="UI/Nodes" method="_on_no_pressed"]
@@ -1386,5 +1466,9 @@ text = "Untiled Board"
 [connection signal="pressed" from="UI/Canvas/Settings" to="UI/Canvas" method="_on_settings_pressed"]
 [connection signal="pressed" from="UI/Canvas/QuickOption1" to="UI/Canvas" method="_on_quick_option_1_pressed"]
 [connection signal="pressed" from="UI/Canvas/QuickOption2" to="UI/Canvas" method="_on_quick_option_2_pressed"]
-[connection signal="pressed" from="UI/BoardDisplay/Home" to="UI/BoardDisplay" method="_on_home_pressed"]
-[connection signal="pressed" from="UI/BoardDisplay/Previous" to="UI/BoardDisplay" method="_on_previous_pressed"]
+[connection signal="focus_entered" from="UI/Holder/Search/Input" to="UI/Holder/Search" method="_on_input_focus_entered"]
+[connection signal="focus_exited" from="UI/Holder/Search/Input" to="UI/Holder/Search" method="_on_input_focus_exited"]
+[connection signal="text_changed" from="UI/Holder/Search/Input" to="UI/Holder/Search" method="_on_input_text_changed"]
+[connection signal="value_changed" from="UI/Holder/Search/SearchQuery/Sen" to="UI/Holder/Search" method="_on_sen_value_changed"]
+[connection signal="pressed" from="UI/Holder/BoardDisplay/Home" to="UI/Holder/BoardDisplay" method="_on_home_pressed"]
+[connection signal="pressed" from="UI/Holder/BoardDisplay/Previous" to="UI/Holder/BoardDisplay" method="_on_previous_pressed"]

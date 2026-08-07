@@ -5,7 +5,7 @@ res://App/Assets/Scenes/Column/Column.tscn::6f5f8fd779e8c621d412008e43a3b048::17
 res://App/Assets/Scenes/File/File.tscn::cf1a235f297d87a7dcc9a82e240878d3::1783351976::res://godot/exported/133200997/export-61bdb48756f12d64a9d01a77866bcdff-File.scn
 res://App/Assets/Scenes/Link/Link.tscn::069a5816e637caa34667fd9f082dbf7d::1783364740::res://godot/exported/133200997/export-f8f5e2a4c9a96d07367cdc50ba6beff6-Link.scn
 res://App/Assets/Scenes/NewBoard/NewBoard.tscn::c590ac545f5496a53cb1c0cfcc5280a2::1783715295::res://godot/exported/133200997/export-01bcf5db80921c7f7b9a5c8421dd5525-NewBoard.scn
-res://App/Assets/Scenes/Notes/Notes.tscn::9ee7223b8c05e4cfc0f1a186fc440770::1783732970::res://godot/exported/133200997/export-be1c8d163f4910c4876122356cc48008-Notes.scn
+res://App/Assets/Scenes/Notes/Notes.tscn::9ee7223b8c05e4cfc0f1a186fc440770::1784137309::res://godot/exported/133200997/export-be1c8d163f4910c4876122356cc48008-Notes.scn
 res://App/Assets/Scenes/ToDo/check_list.tscn::4196c99cebdd20c32d01da3acb149c45::1783297874::res://godot/exported/133200997/export-8e381feccea41f4ed756ad2a5bd5cae8-check_list.scn
 res://App/Assets/Scenes/ToDo/ToDo.tscn::caf70a2b06d41aba48323717a9517bbd::1783886650::res://godot/exported/133200997/export-bdfaf58b6a9ba52705c43bb7f89183af-ToDo.scn
 res://App/Components/CheckFocus/check_focus.tscn::a17a67c164470d325b650a12a98ce41a::1780625873::res://godot/exported/133200997/export-3e2bf9a9af327cd50a404478b43a5a71-check_focus.scn
@@ -19,7 +19,7 @@ res://App/Components/ObjectData/data.tscn::f2d043b8a9db8a15901b80b48bd10d14::178
 res://App/Components/Options/options_holder.tscn::a53ccf55063c88d558d348bef00ac0f5::1783199656::res://godot/exported/133200997/export-c7c5dcfdf9225ea7e668f347a312cb70-options_holder.scn
 res://App/Components/Ratio/ratio.tscn::68ca75be39c810b7b787e867bed9073f::1780625873::res://godot/exported/133200997/export-67227196c8a6d9d8f43d7725b5302dbc-ratio.scn
 res://App/Components/SelectObject/select_object.tscn::181e9b0034b9e78d1cbf2fb13a15c757::1783199656::res://godot/exported/133200997/export-2e43c5b1f00dc82eba3b3b285c9c1f99-select_object.scn
-res://App/Main/main.tscn::6e9dab5cad49e7da342155dbfe91e6af::1783886564::res://godot/exported/133200997/export-265fa046f62905255ea566668c2b252f-main.scn
+res://App/Main/main.tscn::618b33a6268ff381c936b9716ffa3f17::1784141257::res://godot/exported/133200997/export-265fa046f62905255ea566668c2b252f-main.scn
 res://App/Components/Day/day.tscn::1c527b43fb3c8e4f13a5154291adff72::1783809373::res://godot/exported/133200997/export-c0ee44e865f72888f8523bf49fe9bc2d-day.scn
 res://App/Assets/Scenes/Board/Board.tscn::b4f246b72345aef8d93f2564e3ec2fd7::1783800879::res://godot/exported/133200997/export-e5f500c0c690f13d60e8aa180132ceda-Board.scn
 res://App/Components/Keybind/keybind.tscn::4e525c115129809280d9a060f6a2d0b1::1783731573::res://godot/exported/133200997/export-b99d4b9310dc6fc704fa0f23c6d2c681-keybind.scn
