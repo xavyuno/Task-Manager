@@ -1,0 +1,27 @@
+[gd_scene format=3 uid="uid://bvoatturjj63y"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2yx08"]
+radius = 8.0
+
+[sub_resource type="Gradient" id="Gradient_sxqbp"]
+interpolation_mode = 2
+offsets = PackedFloat32Array(0.69590646, 0.7134503)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_oot76"]
+gradient = SubResource("Gradient_sxqbp")
+fill = 1
+fill_from = Vector2(0.491453, 0.50427353)
+
+[node name="PixelBlock" type="StaticBody2D" unique_id=648559352 groups=["Pixel"]]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=173358455]
+shape = SubResource("CircleShape2D_2yx08")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=2011573987]
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 8.0
+texture = SubResource("GradientTexture2D_oot76")
+expand_mode = 1

@@ -23,15 +23,16 @@ layout_mode = 2
 size_flags_vertical = 3
 theme_override_fonts/font = ExtResource("3")
 theme_override_font_sizes/font_size = 26
-text = "Open Board"
+text = "Untitled Board"
+autowrap_mode = 2
 
 [node name="ID" type="Label" parent="New" unique_id=152037659]
 layout_mode = 1
 anchors_preset = -1
-anchor_left = 0.000411763
+anchor_left = 0.018058822
 anchor_top = 0.726
 anchor_right = 0.982059
-anchor_bottom = 0.992065
+anchor_bottom = 0.9737895
 offset_left = -0.0699997
 offset_top = -0.0240021
 offset_right = 0.0499878
@@ -52,19 +53,11 @@ grow_horizontal = 2
 grow_vertical = 2
 expand_mode = 1
 
-[node name="BoardName" type="LineEdit" parent="." unique_id=421877166]
-layout_mode = 2
-placeholder_text = "New Board"
-expand_to_text_length = true
-
-[node name="CheckFocus" parent="." unique_id=1506210347 node_paths=PackedStringArray("par") instance=ExtResource("6")]
-par = NodePath("../BoardName")
+[node name="CheckFocus" parent="." unique_id=1506210347 instance=ExtResource("6")]
 
 [node name="Timer" type="Timer" parent="." unique_id=525114150]
 wait_time = 0.5
 one_shot = true
 
 [connection signal="pressed" from="New" to="." method="_on_new_pressed"]
-[connection signal="text_changed" from="BoardName" to="." method="_on_board_name_text_changed"]
-[connection signal="text_submitted" from="BoardName" to="." method="_on_board_name_text_submitted"]
 [connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

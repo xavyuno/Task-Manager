@@ -7,21 +7,38 @@ Changelog for: v1.7
 - Calendar: events can be added and saved
 - Replaced Background for a gradient
 - Foreground removed from canvas
+- Improved selection accuracy
+- Camera positions of: Home, Calendar, Settings & Canvas are saved
 - Editing notes only requires one click instead of double clicking
 - focusing in and out of the window now saves, making saving more reliable
 - History only shows when items has been saved to history as supposed to showing all the time
 - Grid Snapping: Items can be snapped while moving and resizing with `shift`, the grid step can be changed in settings
-- Removed Preivew notes option
+- Icons corresponding to the quick option will now be shown
+- Most Ui elements such as: search, item bar, history are hidden while in boards that do not support adding items into them: settings, calendar, etc
+- Any removed quick options will default to a random available quick option
+- Board Name can be changed through the item customize options
+- Default Board title is always set to "Untitled Board"
+- Images loaded from file items will not show a foreground unless hovering over it
 - Complete search system overhaul:
 	Titles, IDs, Notes can be searched for all together within the search bar
 	Or individually searched for using the search query available, Title:, Note:, etc
 	Result will be shown and can be used to go to that specific item regardless of ID
 	hovering over a search result will show it's ID
 	` key to start searching without clicking on the search button
-	Every item has their own individual 'Item ID' now and can be searched for
+	Every item has their own individual 'Item ID' now and can be searched using the search bar
+- Canvas Item:
+	FEATURES:
+		Drawing: Double tap the canvas to go into draw mode so no accidental pixels are added or click once to edit the properties of the canvas item
+		Capturing: Turn the canvas into an image file which not only uses far less resources but allows drawing to be saved
+		as it's own image rather than having to screenshot
+		This system is intended for quick and temporary drawings as allowing for draw on board can end up using a lot of resources as this system is not intended for large scaled or detailed drawings
+		This item is still in beta, bugs are to be expected
 - Zooming in a note item that has a scroll bar is disabled (this is to allow for scrolling without zooming in/out)
+- Zooming in/out works within the item bar as long as the history has less than 9 items (no scroll bar)
 - Images within file items are cached and saved, so even if the directory of the image is deleted or changed, the image will still show
 - Removed I and O as keybinds for zooming in and out
+- Removed Preivew notes option
+- Removed Board Title input box
 - Fixed input bar focus lost after pressing enter
 - Fixed drag selecting while in canvas/placing an item
 - Fixed selection outline not showing up while select and dragging

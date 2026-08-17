@@ -23,7 +23,6 @@ func saveItems():
 				if j.has_method("GetData"):
 
 					User.StoredHistory.append(j.GetData())
-	System.SaveAll()
 
 func ChangeBoard(Board: String, Title: String, ID = "", CamPos = Vector2(640, 352)):
 	var Found = false

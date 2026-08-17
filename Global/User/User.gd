@@ -16,6 +16,7 @@ signal AllFocusLost
 signal SearchResultSend
 signal SearchByID
 signal RecieveByID
+signal DeleteAllItemsByBoard
 
 var SearchQueries := ["Note:", "Title:", "ID:", "Board:", "Type:", "Dir:", "ItemID:"]
 var SearchResults := []
@@ -29,6 +30,7 @@ var StillLoading: = true
 
 var MouseInCanvas: = false
 var CanvasHidden = false
+var MouseInOpen := true
 
 var MousePos: Vector2
 var CamPos: Vector2
@@ -42,6 +44,7 @@ var CurrentPage: = "Home"
 var PageTitle: = "Home"
 var PreviousPage: = "Home"
 var PreviousTitle: = "Home"
+var PreviousPos := Vector2.ZERO
 var Boards: = {}
 
 var SelectedObject = null
@@ -57,9 +60,9 @@ var TotalItems := 0
 
 var TestingMode := false
 
-var CamPosBoard := Vector2(640, 352)
-var CamPosSettings := Vector2(640, 352)
-var CamPosCalendar := Vector2(640, 352)
-
 var SelectedDate := [0, 0, 0]
 var SavedEvents := {}
+var CopiedData = {
+	"Data" : null,
+	"Size" : Vector2.ZERO
+}

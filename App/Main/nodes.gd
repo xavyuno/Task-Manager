@@ -11,10 +11,9 @@ func Init():
 	User.connect("ObjectRemoved", Callable(self, "ObjRemoved"))
 	User.connect("ChangeBoard", Callable(self, "ChangedBoard"))
 
-	var Settingsfile = FileAccess.open("user://Settings.txt", FileAccess.READ)
+	var Settingsfile = System.LoadFile(System.MAINDIR + System.SETTINGSFILE + System.EXTENSION)
 	if Settingsfile:
-		var data :Array = Settingsfile.get_var(true)
-		Settingsfile.close()
+		var data = Settingsfile
 		if !(data is Array):
 			print("Error loading settings File!")
 			User.TestingMode = true
@@ -43,19 +42,25 @@ func Init():
 				User.SavedEvents = data[15]
 			ValidateValue(data, 16, "GridSize")
 			ValidateValue(data, 17, "GridCol")
+			if ValidateValue(data, 18, "CamPosBoard"):
+				var Pos = data[18]
+				User.emit_signal("ChangeBoard", "Home", "Home", "", Pos)
+			ValidateValue(data, 19, "CamPosSettings")
+			ValidateValue(data, 20, "CamPosCalendar")
+			ValidateValue(data, 21, "CamPosCanvas")
+			ValidateValue(data, 22, "WarnDeleteAllBoard")
 			
 	Settings.emit_signal("SettingsChanged")
 	User.emit_signal("ChangedOptionsBar")
 
-	var fileHistory = FileAccess.open("user://History.txt", FileAccess.READ)
+	var fileHistory = System.LoadFile(System.MAINDIR + System.HISTORYFILE + System.EXTENSION)
 	if fileHistory:
-		var data = fileHistory.get_var(true)
+		var data = fileHistory
 		if !(data is Array):
 			print("Error loading History File!")
 			User.TestingMode = true
 		else:
 			User.RemovedHistory = data
-			fileHistory.close()
 			for i in User.RemovedHistory:
 				if i["Type"] != "Line":
 					if Settings.ProgressiveLoading:
@@ -63,17 +68,16 @@ func Init():
 					var img = get_node("Holder/ItemHolder/Items/" + i["Type"]).icon
 					history.add_item("Removed: " + JSON.stringify(i, "\t", false, true), img)
 
-	var fileSave = FileAccess.open("user://Save.txt", FileAccess.READ)
+	var fileSave = System.LoadFile(System.MAINDIR + System.SAVEFILE + System.EXTENSION)
 	if fileSave:
-		var data = fileSave.get_var(true)
+		var data = fileSave
 		if !(data is Array):
 			print("Error loading Save File!")
 			User.TestingMode = true
 		else :
 			User.StoredHistory = data
-			fileSave.close()
 			for i in User.StoredHistory:
-				if i["Type"] != "Line":
+				if !(i["Type"] in DirAccess.get_files_at("res://App/Assets/Scenes/")):
 					if Settings.ProgressiveLoading:
 						await get_tree().create_timer(User.LoadDur).timeout
 					if i["Type"] == "Board":
@@ -95,7 +99,7 @@ func ValidateValue(array: Array, index, parameter) -> bool:
 		return false
 
 func _physics_process(delta: float) -> void :
-	$Holder/Delete.visible = !$Holder/DeleteAll.visible
+	$Holder/History/Delete.visible = !$Holder/History/DeleteAll.visible
 	if get_global_mouse_position().x <= 160:
 		User.MouseInCanvas = true
 	else :
@@ -128,7 +132,7 @@ func _physics_process(delta: float) -> void :
 				get_node(i).queue_free()
 			User.MultiSelectedObjects = []
 		User.emit_signal("ItemFocusLost")
-	if Input.is_action_just_pressed("Paste") and !User.InFocus and !User.CurrentPage in ["Settings", "Calendar"]:
+	if Input.is_action_just_pressed("Paste") and !User.InFocus and !get_node("../../Boards/" + User.CurrentPage).is_in_group("NoCanvas"):
 		if User.CopiedObject:
 			var TempData = User.CopiedObject
 			TempData["Pos"] = User.MousePos
@@ -160,6 +164,12 @@ func _physics_process(delta: float) -> void :
 					var obj = preload("res://App/Assets/Scenes/Link/Link.tscn").instantiate()
 					obj.Data["Link"] = cb
 					System.AddObject(obj)
+				else:
+					if User.CopiedData["Data"]:
+						var obj = preload("res://App/Assets/Scenes/File/File.tscn").instantiate()
+						obj.Data["CachedImage"] = User.CopiedData["Data"]
+						System.AddObject(obj)
+						obj.size = User.CopiedData["Size"]
 		User.emit_signal("StoppedSelecting")
 	if Input.is_action_just_pressed("Duplicate") and User.CopiedObject:
 		initObj(User.CopiedObject, true)
@@ -211,17 +221,18 @@ func _on_history_item_activated(index: int) -> void :
 			Undo(User.RemovedHistory[index])
 
 func ChangedBoard(Board: String, Title: String, ID = "", CamPos = Vector2(640, 352)):
-	if User.CurrentPage in ["Settings", "Calendar"]:
-		$Holder/ItemHolder.visible = false
+	if get_node("../../Boards/" + Board).is_in_group("NoCanvas"):
+		visible = false
 	else:
-		$Holder/ItemHolder.visible = true
+		visible = true
+	
 	User.emit_signal("ItemFocusLost")
 
 func _exit_tree() -> void :
 	User.emit_signal("SaveObjectData")
 
 func _on_delete_pressed() -> void :
-	$Holder/DeleteAll.visible = true
+	$Holder/History/DeleteAll.visible = true
 
 
 func _on_clear_pressed() -> void :
@@ -233,7 +244,7 @@ func _on_clear_pressed() -> void :
 
 func _on_history_item_clicked(index: int, at_position: Vector2, mouse_button_index: int) -> void:
 	if mouse_button_index == 2:
-		$Holder/HistoryHolder/History.remove_item(index)
+		$Holder/History/HistoryHolder/History.remove_item(index)
 		User.RemovedHistory.erase(User.RemovedHistory[index])
 		System.SaveRemoveHistory()
 
@@ -248,6 +259,7 @@ func _on_yes_pressed() -> void:
 	User.StoredHistory.clear()
 	User.RemovedHistory.clear()
 	User.Boards = {}
+	Canvas.Canvases = 0
 	System.SaveRemoveHistory()
 	System.SaveStoreHistory()
 	var boards = $"../../Boards"
@@ -258,11 +270,11 @@ func _on_yes_pressed() -> void:
 		if !i.is_in_group("Protect"):
 			i.queue_free()
 	User.emit_signal("ChangeBoard", "Home")
-	$Holder/DeleteAll.visible = false
+	$Holder/History/DeleteAll.visible = false
 	UpdateHistory()
 
 func _on_no_pressed() -> void:
-	$Holder/DeleteAll.visible = false
+	$Holder/History/DeleteAll.visible = false
 
 func _on_search_text_submitted(new_text: String) -> void:
 	User.emit_signal("Searched", new_text)

@@ -11,74 +11,39 @@ var Data: = {
 }
 
 var Options := [
-	"Dir",
+	"Directory",
 	"Ratio",
 	"Open"
 ]
 
 func _ready() -> void :
 	initItem()
-	InitFile()
+	LoadFile()
 
 func _process(delta: float) -> void :
 	Data["Pos"] = position
 	Data["Size"] = size
-
-func InitFile():
-	if Data["Dir"] == "":
-		return
-	var img = Image.load_from_file(ProjectSettings.globalize_path(Data["Dir"]))
-	var imgTxt = ImageTexture.new()
-	var texture
-	if img:
-		texture = imgTxt.create_from_image(img)
-	if texture is Texture:
-		$Open / Image.texture = texture
-		$Open / Holder.visible = false
-		$Open / Title.text = ""
-		if Has("CachedImage"):
-			Data["CachedImage"] = texture
-		else:
-			Data["CachedImage"] = texture
-	else:
-		if Has("CachedImage"):
-			Data["CachedImage"] = null
-		$Open / Image.texture = null
-		$Open / Title.text = "Open"
-		$Open / Holder.visible = true
-		var file = FileAccess.open(ProjectSettings.globalize_path(Data["Dir"]), FileAccess.READ)
-		var txt
-		if file:
-			txt = file.get_as_text()
-			$Open / Holder / Preview.text = "Preview:\n" + txt
-			file.close()
+	Data["CachedImage"] = $Open/Image.texture
 
 func LoadFile():
-	if Data["Dir"] == "":
-		return
 	var img = Image.load_from_file(ProjectSettings.globalize_path(Data["Dir"]))
 	var imgTxt = ImageTexture.new()
 	var texture
 	if img:
 		texture = imgTxt.create_from_image(img)
-	if texture is Texture:
+	else:
+		texture = Has("CachedImage")
+	if texture:
 		$Open / Image.texture = texture
 		$Open / Holder.visible = false
 		$Open / Title.text = ""
-		if Has("CachedImage"):
-			Data["CachedImage"] = texture
-		else:
-			Data["CachedImage"] = texture
 	else:
-		if Has("CachedImage"):
-			Data["CachedImage"] = null
 		$Open / Image.texture = null
-		$Open / Title.text = "Open"
+		$Open / Title.text = "Preview:"
 		$Open / Holder.visible = true
 		var file = FileAccess.open(ProjectSettings.globalize_path(Data["Dir"]), FileAccess.READ)
 		var txt
 		if file:
 			txt = file.get_as_text()
-			$Open / Holder / Preview.text = "Preview:\n" + txt
+			$Open / Holder / Preview.text = txt
 			file.close()
-	print(Data)

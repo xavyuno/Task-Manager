@@ -1,14 +1,9 @@
 extends Panel
 
 var selected := 0
-var Options := [
-	"Show_Center",
-	"Reset_Cam",
-	"Calendar"
-]
 
 func _ready() -> void:
-	for i in Options:
+	for i in Settings.AvailableQuickOptions:
 		var butt = Button.new()
 		butt.custom_minimum_size = Vector2(32, 32)
 		butt.name = i.replace("_", " ")

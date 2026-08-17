@@ -1,0 +1,33 @@
+[gd_scene format=3 uid="uid://xqq3l461dha0"]
+
+[ext_resource type="Script" uid="uid://i88gqx3u42e" path="res://App/Assets/Scenes/Canvas/draw_manager.gd" id="1_5c1w3"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_oot76"]
+radius = 8.0
+
+[sub_resource type="Gradient" id="Gradient_sxqbp"]
+interpolation_mode = 2
+offsets = PackedFloat32Array(0.69590646, 0.7134503)
+colors = PackedColorArray(1, 1, 1, 0.5, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_5c1w3"]
+gradient = SubResource("Gradient_sxqbp")
+fill = 1
+fill_from = Vector2(0.491453, 0.50427353)
+
+[node name="DrawManager" type="Area2D" unique_id=1509072768]
+script = ExtResource("1_5c1w3")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=625828244]
+shape = SubResource("CircleShape2D_oot76")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1891231437]
+modulate = Color(0.66524476, 0.10116496, 0, 1)
+offset_left = -8.0
+offset_top = -8.0
+offset_right = 8.0
+offset_bottom = 8.0
+texture = SubResource("GradientTexture2D_5c1w3")
+expand_mode = 1
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

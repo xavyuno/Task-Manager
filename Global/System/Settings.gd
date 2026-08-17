@@ -2,6 +2,12 @@ extends Node
 
 signal SettingsChanged
 
+var AvailableQuickOptions := [
+	"Show_Center",
+	"Reset_Cam",
+	"Calendar",
+]
+
 var BackgroundCol: = Color.ROYAL_BLUE
 var UpdatePath: String = "user://TaskManager.exe"
 var ItemLimit := 10000
@@ -20,6 +26,11 @@ var DragCol := Color.WHITE
 var GridSnap := false
 var GridSize := 16
 var GridCol := Color.WHITE
+var CamPosBoard := Vector2(640, 352)
+var CamPosSettings := Vector2(640, 352)
+var CamPosCalendar := Vector2(640, 352)
+var CamPosCanvas := Vector2(640, 352)
+var WarnDeleteAllBoard := true
 
 var SavedKeybinds := {
 	"Bold" : [],
@@ -32,8 +43,6 @@ var SavedKeybinds := {
 	"Copy" : [],
 	"Undo" : [],
 	"ResetCam" : [],
-	
-
 }
 
 func GetSettings():
@@ -55,6 +64,11 @@ func GetSettings():
 		SavedKeybinds,
 		User.SavedEvents,
 		GridSize,
-		GridCol
+		GridCol,
+		CamPosBoard,
+		CamPosSettings,
+		CamPosCalendar,
+		CamPosCanvas,
+		WarnDeleteAllBoard
 
 	]

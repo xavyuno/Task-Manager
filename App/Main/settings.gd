@@ -177,7 +177,6 @@ func _input(event: InputEvent) -> void:
 		InputMap.action_add_event("Bold", event)
 		print(InputMap.action_get_events("Bold"))
 
-
 func _on_drag_color_2_color_changed(color: Color) -> void:
 	Settings.GridCol = color
 	Settings.emit_signal("SettingsChanged")
@@ -185,3 +184,6 @@ func _on_drag_color_2_color_changed(color: Color) -> void:
 
 func _on_grid_scale_value_changed(value: float) -> void:
 	Settings.GridSize = value * 16
+
+func _on_canvas_pressed() -> void:
+	User.emit_signal("ChangeBoard", "Canvas", "Canvas", "", User.CamPosCanvas)

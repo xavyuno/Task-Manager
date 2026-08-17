@@ -16,11 +16,13 @@ func _physics_process(delta: float) -> void:
 		if User.Boards.has(PrevID):
 			User.emit_signal("ChangeBoard", PrevID, PrevTitle, "", User.Boards[PrevID]["CamPos"])
 		else :
-			User.emit_signal("ChangeBoard", "Home", "Home", "", User.CamPosBoard)
+			User.emit_signal("ChangeBoard", "Home", "Home", "", Settings.CamPosBoard)
 
 func ChangedBoard(Board: String, Title: String, ID = "", CamPos = Vector2(640, 352)):
+	User.PreviousPage = PrevID
+	User.PreviousTitle = PrevTitle
 	User.emit_signal("AllFocusLost")
-	if Board in ["Settings", "Calendar"]:
+	if get_node("../../../Boards/" + Board).is_in_group("NoCanvas"):
 		home.visible = true
 		home.text = "Home"
 		previous.visible = false
@@ -47,13 +49,6 @@ func ChangedBoard(Board: String, Title: String, ID = "", CamPos = Vector2(640, 3
 			PrevID = "Home"
 			home.visible = true
 			previous.visible = false
-	else :
-		previous.text = "Home/"
-		PrevTitle = "Home"
-		PrevID = "Home"
-		home.text = "Home/"
-		home.visible = true
-		previous.visible = false
 	if Board.similarity("Home") == 1:
 		$NewBoard.visible = false
 		previous.visible = false
@@ -64,11 +59,9 @@ func ChangedBoard(Board: String, Title: String, ID = "", CamPos = Vector2(640, 3
 			tempTitle = "Untitled Board: " + Board
 		$NewBoard.text = tempTitle
 		$NewBoard.visible = true
-	User.PreviousPage = PrevID
-	User.PreviousTitle = PrevTitle
 
 func _on_home_pressed() -> void:
-	User.emit_signal("ChangeBoard", "Home", "Home", "", User.CamPosBoard)
+	User.emit_signal("ChangeBoard", "Home", "Home", "", Settings.CamPosBoard)
 
 func _on_previous_pressed() -> void:
 	User.emit_signal("ChangeBoard", PrevID, PrevTitle, "", User.Boards[PrevID]["CamPos"])

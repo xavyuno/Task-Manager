@@ -29,17 +29,11 @@ func _ready() -> void :
 	initItem()
 	EditNotes(false)
 	UpdateValues(NotesText, "Note", "text")
+	RichText.text = NotesText.text
 	UpdateValues($Title, "Title", "text")
 	UpdateValues($Title, "TitleOn", "visible")
-	UpdateValues(RichText, "Note", "text")
-	if Data.has("FontSize"):
-		ChangeFontSize(Data["FontSize"])
-	else :
-		ChangeFontSize(Settings.DefaultFontSize)
-	if Data.has("TitleSize"):
-		ChangeTitleSize(Data["TitleSize"])
-	else :
-		ChangeTitleSize(Settings.DefaultFontSize)
+	ChangeFontSize(Has("FontSize"))
+	ChangeTitleSize(Has("TitleSize"))
 		
 	for i in self.get_children(true):
 		for j in i.get_children(true):

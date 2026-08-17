@@ -3,21 +3,29 @@
 [ext_resource type="Script" uid="uid://d647gk3h537a" path="res://addons/DevTasks/task.gd" id="1_d47x2"]
 
 [node name="Task" type="HBoxContainer" unique_id=1768177948]
-offset_right = 113.0
-offset_bottom = 28.0
+offset_right = 298.0
+offset_bottom = 35.0
 size_flags_horizontal = 3
+size_flags_vertical = 3
 script = ExtResource("1_d47x2")
 
 [node name="Check" type="CheckBox" parent="." unique_id=1856787086]
 layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
 autowrap_mode = 3
 
-[node name="Info" type="LineEdit" parent="." unique_id=1755620920]
+[node name="Info" type="TextEdit" parent="." unique_id=386277606]
 layout_mode = 2
 size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 14
+text = "wd aawd wadadw wad "
 placeholder_text = "Todo"
+wrap_mode = 1
+scroll_smooth = true
+scroll_fit_content_height = true
+scroll_fit_content_width = true
 
 [node name="Remove" type="Button" parent="." unique_id=1020744389]
-custom_minimum_size = Vector2(32, 0)
 layout_mode = 2
 text = "X"

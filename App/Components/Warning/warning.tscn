@@ -1,0 +1,72 @@
+[gd_scene format=3 uid="uid://c8wgalane28s7"]
+
+[ext_resource type="Script" uid="uid://2nj7ko2rc2yp" path="res://App/Components/Warning/warning.gd" id="1_r0fjh"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_oot76"]
+font_size = 80
+
+[sub_resource type="LabelSettings" id="LabelSettings_r7pyv"]
+font_size = 35
+
+[node name="Warning" type="Control" unique_id=1547867327]
+process_mode = 3
+z_index = 10
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_r0fjh")
+
+[node name="BG" type="Panel" parent="." unique_id=2117863484]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Holder" type="VBoxContainer" parent="." unique_id=1827039560]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 64.0
+offset_top = 64.0
+offset_right = -64.0
+offset_bottom = -64.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Ttile" type="Label" parent="Holder" unique_id=973551764]
+layout_mode = 2
+text = "Warning !!!"
+label_settings = SubResource("LabelSettings_oot76")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="Info" type="Label" parent="Holder" unique_id=2059987976]
+layout_mode = 2
+size_flags_vertical = 6
+text = "Placeholder"
+label_settings = SubResource("LabelSettings_r7pyv")
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Holder" type="HBoxContainer" parent="Holder" unique_id=1193287587]
+layout_mode = 2
+
+[node name="Accept" type="Button" parent="Holder/Holder" unique_id=1913099319]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Accept"
+
+[node name="Decline" type="Button" parent="Holder/Holder" unique_id=973307007]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Decline"
+
+[connection signal="pressed" from="Holder/Holder/Accept" to="." method="_on_accept_pressed"]
+[connection signal="pressed" from="Holder/Holder/Decline" to="." method="_on_decline_pressed"]

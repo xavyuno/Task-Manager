@@ -5,14 +5,14 @@ var Data: = {
 	"Pos": Vector2.ZERO, 
 	"Size": Vector2.ZERO, 
 	"Board": "Getting ID...", 
-	"Title": "", 
+	"Title": "Untitled Board", 
 	"ID": "Home", 
 	"Cover" : null,
 	"CamPos" : Vector2(640, 352),
 	"ItemID" : 0
 }
 
-var Options := ["Cover", "Board"]
+var Options := ["Cover", "BoardName", "Board"]
 
 var Preview := false
 var ClickedOnce := false
@@ -20,7 +20,7 @@ var ClickedOnce := false
 func _ready() -> void :
 	Settings.TotalBoards += 1
 	initItem()
-	UpdateValues($BoardName, "Title", "text")
+	UpdateValues($New, "Title", "text")
 	UpdateValues($New/Cover, "Cover", "texture")
 	if Data["Board"] == "Getting ID..." and !Preview:
 		Data["Board"] = str(Settings.TotalBoards)
@@ -30,9 +30,14 @@ func _ready() -> void :
 		$New.text = "" if Data["Cover"] else "Board"
 		$New/ID.visible = false if Data["Cover"] else true
 
+
+
 func ChangeID(value):
 	Data["Board"] = str(value).trim_suffix(".0")
 	$New/ID.text = "ID: " + Data["Board"]
+
+func SetTitle(title):
+	$New.text = title
 
 func ChangeCover(txt):
 	$New.text = "" if txt else "Board"
@@ -43,7 +48,7 @@ func ChangeCover(txt):
 func _process(delta: float) -> void :
 	Data["Pos"] = position
 	Data["Size"] = size
-	Data["Title"] = $BoardName.text
+	Data["Title"] = $New.text
 	if User.CurrentPage == Data["Board"]:
 		Data["CamPos"] = User.CamPos
 		User.Boards[Data["Board"]]["CamPos"] = Data["CamPos"]

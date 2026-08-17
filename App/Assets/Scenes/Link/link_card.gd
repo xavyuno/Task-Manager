@@ -29,7 +29,7 @@ func _ready() -> void :
 		$GetPreview.request("https://api.linkpreview.net/?q=" + Data["Link"], ["X-Linkpreview-Api-Key: " + Settings.UrlAPIKey])
 
 func GetImage():
-	if !Data.has("ThumbnailPath"):
+	if GetThumbnailPath():
 		Data.merge({"ThumbnailPath" : ""}, true)
 		var Dir = DirAccess.make_dir_absolute("user://SavedLinkImages")
 		var files = DirAccess.get_files_at("user://SavedLinkImages")
@@ -42,8 +42,20 @@ func GetImage():
 		Data["ThumbnailPath"] = filepath
 		return filepath
 	else :
-		$Access/Image.texture.get_image().save_png(Data["ThumbnailPath"])
-		return Data["ThumbnailPath"]
+		if $Access/Image.texture:
+			$Access/Image.texture.get_image().save_png(Data["ThumbnailPath"])
+			return Data["ThumbnailPath"]
+		else:
+			return ""
+
+func GetThumbnailPath():
+	if Data.has("ThumbnailPath"):
+		if Data["ThumbnailPath"] == "":
+			return false
+		else:
+			return true
+	else:
+		return false
 
 func _process(delta: float) -> void :
 	Data["Pos"] = position

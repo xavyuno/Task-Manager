@@ -12,8 +12,7 @@ func GetData() -> Dictionary:
 	return self.Data
 
 func UpdateValues(NODE, value, parameter):
-	if Has(value):
-		NODE.call_deferred("set", parameter, self.Data[value])
+	NODE.call_deferred("set", parameter, Has(value))
 
 # SELECT OBJECT CODE BELOW
 
@@ -33,14 +32,19 @@ var Body : StaticBody2D = null
 
 func Has(ITEM : String, CustomValue = null):
 	if self.Data.has(ITEM):
+		if CustomValue:
+			self.Data[ITEM] = CustomValue
 		return self.Data[ITEM]
 	else:
 		self.Data.merge({ITEM : CustomValue}, true)
 		return self.Data[ITEM]
 
 func initItem():
+	if self.Data["Size"] != Vector2.ZERO:
+		size = self.Data["Size"]
+		position = self.Data["Pos"]
 	User.TotalItems += 1
-	if str(Has("ItemID", "")) == "" or !(typeof(Has("ItemID", "")) == TYPE_STRING):
+	if str(Has("ItemID", "")) == "" or !(typeof(Has("ItemID", "")) == TYPE_STRING) or int(Has("ItemID", "")) <= -1:
 		self.Data["ItemID"] = str(User.TotalItems)
 	TimerNode = Timer.new()
 	TimerNode.one_shot = true
@@ -58,31 +62,51 @@ func initItem():
 	User.connect("Searched", Callable(self, "Searched"))
 	User.connect("AllFocusLost", Callable(self, "AllFocusLost"))
 	User.connect("SearchByID", Callable(self, "SearchByID"))
+	User.connect("DeleteAllItemsByBoard", Callable(self, "DeleteAllItemsByBoard"))
 	
-	#dont even ask
-	
-	for i in self.get_children(true):
-		for j in i.get_children(true):
-			if j.has_signal("focus_entered"):
-				j.connect("focus_entered", Callable(self, "FocusEntered"))
-				j.connect("focus_exited", Callable(self, "FocusExited"))
-			if j.has_signal("button_down"):
-				j.connect("button_down", Callable(self, "button_down"))
-				j.connect("button_up", Callable(self, "button_up"))
-				buttons.append(j)
+	Connect(self.get_children(true), ["focus_entered", "focus_exited", "button_down", "button_up"])
 
-		if i.has_signal("focus_entered"):
-			i.connect("focus_entered", Callable(self, "FocusEntered"))
-			i.connect("focus_exited", Callable(self, "FocusExited"))
-
-		if i.has_signal("button_down"):
-			i.connect("button_down", Callable(self, "button_down"))
-			i.connect("button_up", Callable(self, "button_up"))
-			buttons.append(i)
+func Connect(NODES : Array, SIGNALS : Array):
+	#This ladies and gentlemen is called "Recurrsion" (probably)
+	for i in NODES:
+		for j in SIGNALS:
+			if i.has_signal(j) and !is_connected(j, Callable(self, j)):
+				i.connect(j, Callable(self, j))
+		if i.get_children(true).size() >= 1:
+			Connect(i.get_children(true), SIGNALS)
 
 func SearchByID(ID : String):
 	if Has("ItemID", "") == ID:
 		User.emit_signal("RecieveByID", self.Data)
+
+func Delete():
+	User.emit_signal("ItemFocusLost")
+	if self.Data["Type"] == "Board":
+		Settings.TotalBoards -= 1
+	User.TotalItems -= 1
+	User.emit_signal("StoppedSelecting")
+	User.SelectedObject = null
+	User.MultiSelectedObjects = []
+	User.TotalItems -= 1
+	if !Input.is_action_pressed("Special"):
+		User.emit_signal("ObjectRemoved", self.Data)
+	User.emit_signal("ItemFocusLost")
+	if self.Data["Type"] == "Board":
+		if Settings.WarnDeleteAllBoard:
+			System.CreateWarning("Do you wish to delete all objects within this board?").connect("WarningSelectted", Callable(self, "Warning"))
+		else:
+			queue_free()
+	else:
+		queue_free()
+
+func Warning(output):
+	if output:
+		User.emit_signal("DeleteAllItemsByBoard", self.Data["Board"])
+	queue_free()
+
+func DeleteAllItemsByBoard(ID):
+	if self.Data["ID"] == ID:
+		Delete()
 
 func button_up():
 	if !StillHolding:
@@ -164,7 +188,7 @@ var InitialMousePos := Vector2.ZERO
 
 func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("SelectAll") and self.Data["ID"] == User.CurrentPage and !User.InFocus:
-		FocusEntered()
+		focus_entered()
 	if User.CurrentPage == self.Data["ID"]:
 		if Col != null:
 			Col.disabled = false
@@ -205,17 +229,8 @@ func _physics_process(delta: float) -> void:
 			Action = "Resizing"
 		else :
 			Action = ""
-	if Input.is_action_just_pressed("Delete"):
-		User.emit_signal("ItemFocusLost")
-		if Selected or DragSelected or MultiSelected:
-			if self.Data["Type"] == "Board":
-				Settings.TotalBoards -= 1
-			User.TotalItems -= 1
-			User.emit_signal("ObjectRemoved", self.Data)
-			User.emit_signal("StoppedSelecting")
-			User.SelectedObject = null
-			User.MultiSelectedObjects = []
-			queue_free()
+	if Input.is_action_just_pressed("Delete") and (Selected or DragSelected or MultiSelected):
+		Delete()
 	queue_redraw()
 
 func _input(event: InputEvent) -> void:
@@ -232,6 +247,7 @@ func _input(event: InputEvent) -> void:
 				custom_minimum_size.y = MouseMove(event, size)
 
 func MouseMove(event : InputEventMouseMotion, vec):
+	Col.polygon = System.CreateRectangle(Vector2.ZERO, size)
 	var current_mouse = get_global_mouse_position()
 	var offset = current_mouse - vec
 	var NewPos = vec + (event.relative / User.CamZoom)
@@ -241,9 +257,10 @@ func MouseMove(event : InputEventMouseMotion, vec):
 	return NewPos
 
 func FocusItem():
-	FocusEntered(true)
+	focus_entered(true)
 
 func AllFocusLost():
+	Canvas.SelectedCanvas = false
 	ext(true)
 
 func ItemFocusLost():
@@ -252,7 +269,7 @@ func ItemFocusLost():
 		#DragSelected = false
 		#ext(true)
 
-func FocusEntered(MultiSelect = false):
+func focus_entered(MultiSelect = false):
 	if !(User.MultiSelecting or MultiSelect):
 		DragSelected = false
 		MultiSelected = false
@@ -266,6 +283,8 @@ func FocusEntered(MultiSelect = false):
 		else :
 			User.MultiSelectedObjects.erase(get_path())
 			ext(true)
+	if self.Data["Type"] == "Canvas":
+		Canvas.SelectedCanvas = true
 	User.SelectedObject = get_path()
 	Selected = true
 	User.emit_signal("ItemFocused", get_path())
@@ -281,7 +300,7 @@ func ext(force = false):
 	else :
 		User.emit_signal("ItemFocusLost")
 
-func FocusExited():
+func focus_exited():
 	if (!User.MouseInCanvas or TechnicallyInFocus):
 		ext()
 	else :

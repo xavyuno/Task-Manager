@@ -7,6 +7,7 @@ extends Control
 
 var DevTasks := {}
 var SaveFile := "res://addons/DevTasks/tasks.txt"
+var Loaded := false
 
 func _ready() -> void:
 	Load()
@@ -27,6 +28,7 @@ func LoadTasks():
 			var task = preload("res://addons/DevTasks/task.tscn").instantiate()
 			tasks.add_child(task)
 			task.UpdateData(i, DevTasks[i])
+			Loaded = true
 
 func TaskAdded():
 	DevTasks.merge({input.text : false}, true)
@@ -40,6 +42,8 @@ func _process(delta: float) -> void:
 		Save()
 
 func Save():
+	if !Loaded:
+		return
 	var TempDevTasks = {}
 	for i in tasks.get_child_count():
 		var taskinfo = tasks.get_child(i).get_node("Info").text

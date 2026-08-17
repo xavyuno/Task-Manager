@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://bis3nmllfkujl"]
+
+[ext_resource type="Script" uid="uid://jilhc2up2k1a" path="res://App/Assets/Scenes/Canvas/draw_canvas.gd" id="1_t2je5"]
+[ext_resource type="Script" uid="uid://d3bp3e52af5oj" path="res://App/Assets/Scenes/Canvas/pixels.gd" id="2_2b32e"]
+[ext_resource type="PackedScene" uid="uid://xqq3l461dha0" path="res://App/Assets/Scenes/Canvas/draw_manager.tscn" id="3_rqedr"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_oot76"]
+
+[node name="DrawCanvas" type="VBoxContainer" unique_id=90435713]
+anchors_preset = -1
+anchor_right = 0.3
+anchor_bottom = 0.35795453
+offset_bottom = 4.0
+script = ExtResource("1_t2je5")
+metadata/_edit_use_anchors_ = true
+
+[node name="DrawCanvas" type="SubViewportContainer" parent="." unique_id=93636876]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+stretch = true
+
+[node name="View" type="SubViewport" parent="DrawCanvas" unique_id=1738563665]
+disable_3d = true
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(384, 251)
+render_target_update_mode = 4
+
+[node name="Pixels" type="Control" parent="DrawCanvas/View" unique_id=766558699]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -4.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_2b32e")
+
+[node name="DrawManager" parent="DrawCanvas/View" unique_id=1509072768 instance=ExtResource("3_rqedr")]
+
+[node name="Holder" type="Control" parent="." unique_id=498914374]
+layout_mode = 2
+
+[node name="Edit" type="Button" parent="Holder" unique_id=1729543455]
+layout_mode = 1
+anchors_preset = -1
+anchor_right = 1.0
+offset_top = -255.0
+offset_bottom = 1.0
+theme_override_styles/normal = SubResource("StyleBoxEmpty_oot76")
+
+[node name="Timer" type="Timer" parent="Holder" unique_id=508969924]
+wait_time = 0.5
+one_shot = true
+
+[connection signal="mouse_entered" from="DrawCanvas" to="." method="_on_draw_canvas_mouse_entered"]
+[connection signal="mouse_exited" from="DrawCanvas" to="." method="_on_draw_canvas_mouse_exited"]
+[connection signal="pressed" from="Holder/Edit" to="." method="_on_edit_pressed"]
+[connection signal="timeout" from="Holder/Timer" to="." method="_on_timer_timeout"]

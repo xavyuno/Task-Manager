@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://55nfvi2wjybg" path="res://App/Assets/Scenes/File/file.gd" id="1"]
 [ext_resource type="FontFile" uid="uid://wss58bpb7rd3" path="res://App/Assets/Fonts/0xProto/0xProtoNerdFont-Bold.ttf" id="3"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_aqcpb"]
+
 [sub_resource type="LabelSettings" id="LabelSettings_gyofp"]
 font_size = 13
 
@@ -22,6 +24,7 @@ script = ExtResource("1")
 custom_minimum_size = Vector2(192, 192)
 layout_mode = 2
 size_flags_vertical = 3
+theme_override_styles/normal = SubResource("StyleBoxEmpty_aqcpb")
 
 [node name="Title" type="Label" parent="Open" unique_id=1243111331]
 layout_mode = 0

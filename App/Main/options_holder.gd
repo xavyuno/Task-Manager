@@ -5,19 +5,11 @@ var Options := []
 var popupConst = null
 
 func _ready() -> void:
-	for i in $Items.get_children():
-		if i is Button:
-			i.connect("pressed", Callable(self, i.name + "Pressed"))
-			i.tooltip_text = i.name
 	User.connect("ItemFocused", Callable(self, "ItemFocused"))
 	User.connect("ItemFocusLost", Callable(self, "ItemFocusLost"))
 
 func DeletePressed():
-	User.TotalItems -= 1
-	if !Input.is_action_pressed("Special"):
-		User.emit_signal("ObjectRemoved", ItemNode.Data)
-	ItemNode.queue_free()
-	User.emit_signal("ItemFocusLost")
+	ItemNode.Delete()
 
 func RatioPressed():
 	var Lowest: float = ItemNode.size.x
@@ -34,7 +26,7 @@ func TitlePressed():
 func NotePressed():
 	ItemNode.get_node("Preview").visible = !ItemNode.get_node("Preview").visible
 
-func DirPressed():
+func DirectoryPressed():
 	var dirarray: Array = ItemNode.Data["Dir"].split("/")
 	$"../../FileDialog".current_dir = ItemNode.Data["Dir"].trim_suffix(dirarray[dirarray.size() - 1])
 	$"../../FileDialog".popup(Rect2(0, 0, 600, 600))
@@ -62,7 +54,7 @@ func popup(path):
 
 func ItemFocusLost():
 	User.SelectedObject = null
-	if User.CurrentPage in ["Settings", "Calendar"]:
+	if get_node("../../../../Boards/" + User.CurrentPage).is_in_group("NoCanvas"):
 		$"../ItemHolder".visible = false
 		visible = false
 	else:
@@ -70,7 +62,7 @@ func ItemFocusLost():
 		visible = false
 
 func ItemFocused(path : NodePath):
-	if User.CurrentPage in ["Settings", "Calendar"]:
+	if get_node("../../../../Boards/" + User.CurrentPage).is_in_group("NoCanvas"):
 		$"../ItemHolder".visible = false
 		visible = false
 	else:
@@ -78,19 +70,28 @@ func ItemFocused(path : NodePath):
 		visible = true
 	ItemNode = get_node(path)
 	Options = ItemNode.Options
-	for i in $Items.get_children():
-		if !i.name in ["Delete", "ID", "ItemID"]:
-			i.visible = false
 	if Options.size() <= 0:
 		return
+	for i in $Items.get_children():
+		if !i.name in ["ItemID", "ID"]: 
+			i.visible = false
 	for i in Options.size():
-		get_node("Items/" + Options[i]).visible = true
+		if !$Items.get_node(Options[i]):
+			var but = Button.new()
+			but.name = Options[i]
+			but.text = Options[i]
+			$Items.get_child(0).add_sibling(but)
+			but.connect("pressed", Callable(self, but.name + "Pressed"))
+			but.tooltip_text = but.name
+		else:
+			$Items.get_node(Options[i]).visible = true
 	ValidateValue($Items/ID, "ID", "text", GetValue("ID: ", "ID"))
 	ValidateValue($Items/ItemID, "ItemID", "text", GetValue("Item ID: ", "ItemID"))
 	ValidateValue($Items/Board, "Board", "value", GetValue("", "Board"))
 	ValidateValue($Items/FontSize, "FontSize", "value", GetValue("", "FontSize"))
 	ValidateValue($Items/TitleSize, "TitleSize", "value", GetValue("", "TitleSize"))
 	ValidateValue($Items/Link, "Link", "text", GetValue("", "Link"))
+	ValidateValue($Items/BoardName, "Title", "text", GetValue("", "Title"))
 
 func GetValue(before, parameter, after = ""):
 	if ItemNode.Data.has(parameter):
@@ -100,6 +101,12 @@ func GetValue(before, parameter, after = ""):
 			return before + str(ItemNode.Data[parameter]) + after
 	else :
 		return ""
+
+func CapturePressed():
+	ItemNode.Capture()
+
+func ClearPressed():
+	ItemNode.Clear()
 
 func ThumbnailPressed():
 	OS.shell_open(ProjectSettings.globalize_path(ItemNode.GetImage()))
@@ -133,3 +140,6 @@ func _on_file_dialog_file_selected(path: String) -> void:
 
 func _on_link_focus_exited() -> void:
 	ItemNode.SetLink($Items/Link.text)
+
+func _on_board_name_text_changed(new_text: String) -> void:
+	ItemNode.SetTitle(new_text)

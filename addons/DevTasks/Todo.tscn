@@ -4,11 +4,14 @@
 
 [node name="Todo" type="Control" unique_id=1789455578]
 layout_mode = 3
-anchors_preset = 9
+anchor_right = 0.25675002
 anchor_bottom = 1.0
-offset_right = 177.0
+offset_right = 0.35998535
 grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
 script = ExtResource("1_285fa")
+metadata/_edit_use_anchors_ = true
 
 [node name="Holder" type="VBoxContainer" parent="." unique_id=120810674]
 layout_mode = 1
@@ -19,11 +22,12 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 4
 
-[node name="Input" type="LineEdit" parent="Holder" unique_id=1377639336]
+[node name="Input" type="LineEdit" parent="Holder" unique_id=1796293963]
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
+size_flags_vertical = 0
 theme_override_font_sizes/font_size = 13
 placeholder_text = "Type Task"
-keep_editing_on_text_submit = true
 
 [node name="Tasks" type="ScrollContainer" parent="Holder" unique_id=360644688]
 layout_mode = 2

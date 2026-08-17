@@ -16,6 +16,10 @@ func _ready() -> void:
 		butt.connect("pressed", Pressed.bind(butt.text))
 
 func _process(delta: float) -> void:
+	if get_node("../../../Boards/" + User.CurrentPage).is_in_group("NoCanvas"):
+		visible = false
+	else:
+		visible = true
 	if Input.is_action_just_pressed("StartSearch"):
 		if Focued:
 			Focued = false
