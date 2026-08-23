@@ -9,7 +9,8 @@ var Data: = {
 	"Title": "", 
 	"Items": [], 
 	"ID": "Home",
-	"ItemID" : 0
+	"ItemID" : "",
+	"Tags" : []
 }
 
 var Options := [

@@ -8,7 +8,8 @@ var Data: = {
 	"ID": "Home",
 	"Thumbnail" : null,
 	"ThumbnailPath" : "",
-	"ItemID" : 0
+	"ItemID" : "",
+	"Tags" : []
 }
 
 var Options := [
@@ -22,11 +23,11 @@ func _ready() -> void :
 	UpdateValues($Access/Image, "Thumbnail", "texture")
 	if Data.has("Thumbnail"):
 		if Data["Thumbnail"] == null:
-			$GetPreview.request("https://api.linkpreview.net/?q=" + Data["Link"], ["X-Linkpreview-Api-Key: " + Settings.UrlAPIKey])
+			$GetPreview.request("https://api.linkpreview.net/?q=" + Data["Link"], ["X-Linkpreview-Api-Key: " + Settings.Data["UrlAPIKey"]])
 		else :
 			$Access/Image.visible = true
 	else:
-		$GetPreview.request("https://api.linkpreview.net/?q=" + Data["Link"], ["X-Linkpreview-Api-Key: " + Settings.UrlAPIKey])
+		$GetPreview.request("https://api.linkpreview.net/?q=" + Data["Link"], ["X-Linkpreview-Api-Key: " + Settings.Data["UrlAPIKey"]])
 
 func GetImage():
 	if GetThumbnailPath():

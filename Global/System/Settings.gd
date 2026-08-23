@@ -3,72 +3,56 @@ extends Node
 signal SettingsChanged
 
 var AvailableQuickOptions := [
-	"Show_Center",
-	"Reset_Cam",
+	"ShowCenter",
+	"ResetCam",
 	"Calendar",
+	"Hide"
 ]
 
-var BackgroundCol: = Color.ROYAL_BLUE
-var UpdatePath: String = "user://TaskManager.exe"
-var ItemLimit := 10000
-var LoadDur := 0.1
-var OptionsEnabled := false
-var ShowCenter := true
-var QuickOptions := ["PreviewNotes", "OptionsBar"]
-var DefaultFontSize := 15
-var DefaultTtileSize := 15
-var UrlAPIKey := ""
-var ProgressiveLoading := false
-var TotalBoards := 0
-var SelectCol := Color.BLACK
-var CanSelectCol := true
-var DragCol := Color.WHITE
-var GridSnap := false
-var GridSize := 16
-var GridCol := Color.WHITE
-var CamPosBoard := Vector2(640, 352)
-var CamPosSettings := Vector2(640, 352)
-var CamPosCalendar := Vector2(640, 352)
-var CamPosCanvas := Vector2(640, 352)
-var WarnDeleteAllBoard := true
-
-var SavedKeybinds := {
-	"Bold" : [],
-	"Move" : [],
-	"Resize" : [],
-	"Cut" : [],
-	"SelectAll" : [],
-	"Paste" : [],
-	"Duplicate" : [],
-	"Copy" : [],
-	"Undo" : [],
-	"ResetCam" : [],
+var Data = {
+	"BackgroundCol": Color.ROYAL_BLUE,
+	"UpdatePath": "user://TaskManager.exe",
+	"ItemLimit": 10000,
+	"LoadDur": 0.1,
+	"OptionsEnabled": false,
+	"ShowCenter": true,
+	"QuickOptions": ["Hide", "Calendar", "ResetCam"],
+	"DefaultFontSize": 15,
+	"DefaultTitleSize": 15,
+	"UrlAPIKey": "",
+	"ProgressiveLoading": false,
+	"TotalBoards": 0,
+	"SelectCol": Color.BLACK,
+	"CanSelectCol": true,
+	"DragCol": Color.WHITE,
+	"GridSnap": false,
+	"GridSize": 16,
+	"GridCol": Color.WHITE,
+	"CamPosHome": Vector2(640, 352),
+	"CamPosSettings": Vector2(840, 504),
+	"CamPosCalendar": Vector2(640, 352),
+	"CamPosCanvas": Vector2(640, 352),
+	"CamZoomHome": Vector2(1, 1),
+	"CamZoomSettings": Vector2(0.65, 0.65),
+	"CamZoomCalendar": Vector2(0.65, 0.65),
+	"WarnDeleteAllBoard": true,
+	"Email": "",
+	"Password": "",
+	"SavedKeybinds" : {
+		"Bold" : [],
+		"Move" : [],
+		"Resize" : [],
+		"Cut" : [],
+		"SelectAll" : [],
+		"Paste" : [],
+		"Duplicate" : [],
+		"Copy" : [],
+		"Undo" : [],
+		"ResetCam" : [],
+	},
+	"ToolbarVisible" : true,
+	"DebugMode" : false,
+	"OverrideText" : [],
+	"CurrentPage" : "Home",
+	"PageTitle" : "Home",
 }
-
-func GetSettings():
-	return [
-		BackgroundCol, 
-		UpdatePath,
-		LoadDur,
-		ItemLimit,
-		OptionsEnabled,
-		ShowCenter,
-		QuickOptions,
-		DefaultFontSize,
-		DefaultTtileSize,
-		UrlAPIKey,
-		ProgressiveLoading,
-		TotalBoards,
-		SelectCol,
-		CanSelectCol,
-		SavedKeybinds,
-		User.SavedEvents,
-		GridSize,
-		GridCol,
-		CamPosBoard,
-		CamPosSettings,
-		CamPosCalendar,
-		CamPosCanvas,
-		WarnDeleteAllBoard
-
-	]

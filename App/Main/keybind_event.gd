@@ -14,8 +14,8 @@ func _ready() -> void:
 		KB.Event = Event
 		InputMap.action_add_event(Event, i)
 		$Holder.add_child(KB)
-	if Settings.SavedKeybinds[Event].size() >= 1:
-		for i in Settings.SavedKeybinds[Event]:
+	if Settings.Data["SavedKeybinds"][Event].size() >= 1:
+		for i in Settings.Data["SavedKeybinds"][Event]:
 			var KB = preload("res://App/Components/Keybind/keybind.tscn").instantiate()
 			KB.Keybind = i
 			KB.Event = Event
@@ -31,7 +31,7 @@ func _input(event: InputEvent) -> void:
 		var KB = preload("res://App/Components/Keybind/keybind.tscn").instantiate()
 		KB.Keybind = event
 		KB.Event = Event
-		Settings.SavedKeybinds[Event].append(event)
+		Settings.Data["SavedKeybinds"][Event].append(event)
 		InputMap.action_add_event(Event, event)
 		$Holder.add_child(KB)
 		Settings.emit_signal("SettingsChanged")

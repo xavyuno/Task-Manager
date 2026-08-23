@@ -7,6 +7,7 @@ var popupConst = null
 func _ready() -> void:
 	User.connect("ItemFocused", Callable(self, "ItemFocused"))
 	User.connect("ItemFocusLost", Callable(self, "ItemFocusLost"))
+	visible = false
 
 func DeletePressed():
 	ItemNode.Delete()
@@ -54,7 +55,7 @@ func popup(path):
 
 func ItemFocusLost():
 	User.SelectedObject = null
-	if get_node("../../../../Boards/" + User.CurrentPage).is_in_group("NoCanvas"):
+	if get_node("../../../../Boards/" + Settings.Data["CurrentPage"]).is_in_group("NoCanvas"):
 		$"../ItemHolder".visible = false
 		visible = false
 	else:
@@ -62,7 +63,7 @@ func ItemFocusLost():
 		visible = false
 
 func ItemFocused(path : NodePath):
-	if get_node("../../../../Boards/" + User.CurrentPage).is_in_group("NoCanvas"):
+	if get_node("../../../../Boards/" + Settings.Data["CurrentPage"]).is_in_group("NoCanvas"):
 		$"../ItemHolder".visible = false
 		visible = false
 	else:
@@ -73,7 +74,7 @@ func ItemFocused(path : NodePath):
 	if Options.size() <= 0:
 		return
 	for i in $Items.get_children():
-		if !i.name in ["ItemID", "ID"]: 
+		if !i.name in ["ItemID", "ID", "Tags"]: 
 			i.visible = false
 	for i in Options.size():
 		if !$Items.get_node(Options[i]):
@@ -85,6 +86,7 @@ func ItemFocused(path : NodePath):
 			but.tooltip_text = but.name
 		else:
 			$Items.get_node(Options[i]).visible = true
+	$Items/Tags/Options/Input.text = ""
 	ValidateValue($Items/ID, "ID", "text", GetValue("ID: ", "ID"))
 	ValidateValue($Items/ItemID, "ItemID", "text", GetValue("Item ID: ", "ItemID"))
 	ValidateValue($Items/Board, "Board", "value", GetValue("", "Board"))
@@ -92,6 +94,25 @@ func ItemFocused(path : NodePath):
 	ValidateValue($Items/TitleSize, "TitleSize", "value", GetValue("", "TitleSize"))
 	ValidateValue($Items/Link, "Link", "text", GetValue("", "Link"))
 	ValidateValue($Items/BoardName, "Title", "text", GetValue("", "Title"))
+	ReloadTags()
+	
+func ReloadTags():
+	if $Items/Tags/Holder.get_child_count() >= 1:
+		for i in $Items/Tags/Holder.get_children():
+			i.queue_free()
+	var TotalTags = 0
+	for i in ItemNode.Data["Tags"]:
+		var butt = Button.new()
+		butt.text = i
+		butt.name = i
+		butt.tooltip_text = "Click to remove tag"
+		butt.connect("pressed", RemoveTag.bind(TotalTags, i))
+		$Items/Tags/Holder.add_child(butt)
+		TotalTags += 1
+
+func RemoveTag(ID, Tag):
+	ItemNode.Data["Tags"].remove_at(ID)
+	get_node("Items/Tags/Holder/" + Tag).queue_free()
 
 func GetValue(before, parameter, after = ""):
 	if ItemNode.Data.has(parameter):
@@ -114,7 +135,7 @@ func ThumbnailPressed():
 func GoToPressed():
 	OS.shell_open(ItemNode.Data["Link"])
 
-func ShowProgressPressed():
+func ProgressPressed():
 	ItemNode.get_node("Top/Progress").visible = !ItemNode.get_node("Top/Progress").visible
 
 func ValidateValue(Nodepath, value, parameter, change = ""):
@@ -143,3 +164,7 @@ func _on_link_focus_exited() -> void:
 
 func _on_board_name_text_changed(new_text: String) -> void:
 	ItemNode.SetTitle(new_text)
+
+func _on_add_pressed() -> void:
+	ItemNode.AddTag($Items/Tags/Options/Input.text)
+	ReloadTags()

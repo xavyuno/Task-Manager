@@ -34,6 +34,8 @@ User="*res://Global/User/User.gd"
 System="*res://Global/System/System.gd"
 Settings="*res://Global/System/Settings.gd"
 Canvas="*uid://1w0gvnn2g4j4"
+Firebase="*uid://cvb26atjckwlq"
+Commands="*uid://cboin7obfvtm7"
 
 [debug]
 
@@ -50,7 +52,7 @@ window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/DevTasks/plugin.cfg")
+enabled=PackedStringArray("res://addons/DevTasks/plugin.cfg", "res://addons/godot-firebase/plugin.cfg", "res://addons/http-sse-client/plugin.cfg")
 
 [gui]
 

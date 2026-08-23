@@ -61,7 +61,7 @@ func initItem():
 	User.connect("StoppedSelecting", Callable(self, "StoppedSelecting"))
 	User.connect("Searched", Callable(self, "Searched"))
 	User.connect("AllFocusLost", Callable(self, "AllFocusLost"))
-	User.connect("SearchByID", Callable(self, "SearchByID"))
+	User.connect("SearchByQuery", Callable(self, "SearchByQuery"))
 	User.connect("DeleteAllItemsByBoard", Callable(self, "DeleteAllItemsByBoard"))
 	
 	Connect(self.get_children(true), ["focus_entered", "focus_exited", "button_down", "button_up"])
@@ -75,14 +75,27 @@ func Connect(NODES : Array, SIGNALS : Array):
 		if i.get_children(true).size() >= 1:
 			Connect(i.get_children(true), SIGNALS)
 
-func SearchByID(ID : String):
-	if Has("ItemID", "") == ID:
-		User.emit_signal("RecieveByID", self.Data)
+func SearchByQuery(ID : String):
+	var TempFound := false
+	var Query = ID.split(":", true, 1)
+	if Query.size() <= 1:
+		var NewQuery = User.SearchQueries
+		NewQuery.erase("Type:")
+		for i in NewQuery:
+			if TempFound:
+				break
+			if SearchSimilarity(ID, i.replace(":", ""), true) and !TempFound:
+				TempFound = true
+				System.GoTo(self.Data)
+	else:
+		if Query[0].capitalize() + ":" in User.SearchQueries:
+			if SearchSimilarity(Query[1].capitalize(), Query[0].capitalize(), true):
+				System.GoTo(self.Data)
 
 func Delete():
 	User.emit_signal("ItemFocusLost")
 	if self.Data["Type"] == "Board":
-		Settings.TotalBoards -= 1
+		Settings.Data["TotalBoards"] -= 1
 	User.TotalItems -= 1
 	User.emit_signal("StoppedSelecting")
 	User.SelectedObject = null
@@ -92,7 +105,7 @@ func Delete():
 		User.emit_signal("ObjectRemoved", self.Data)
 	User.emit_signal("ItemFocusLost")
 	if self.Data["Type"] == "Board":
-		if Settings.WarnDeleteAllBoard:
+		if Settings.Data["WarnDeleteAllBoard"]:
 			System.CreateWarning("Do you wish to delete all objects within this board?").connect("WarningSelectted", Callable(self, "Warning"))
 		else:
 			queue_free()
@@ -103,6 +116,9 @@ func Warning(output):
 	if output:
 		User.emit_signal("DeleteAllItemsByBoard", self.Data["Board"])
 	queue_free()
+
+func AddTag(ID):
+	self.Data["Tags"].append(ID)
 
 func DeleteAllItemsByBoard(ID):
 	if self.Data["ID"] == ID:
@@ -149,24 +165,35 @@ func Searched(itemName : String):
 		if Query[0] + ":" in User.SearchQueries:
 			visible = SearchSimilarity(Query[1], Query[0])
 
-func SearchSimilarity(Search : String, Query : String):
+func SearchSimilarity(Search : String, Query : String, Temp = false):
 	var TempData : Dictionary = self.Data
+	var Result = false
 	if self.Data.has(Query):
-		var Temp : String = self.Data[Query]
-		Temp = Temp.to_lower()
-		if Temp.similarity(Search.to_lower()) >= User.SearchSen and !(TempData in User.SearchResults):
-			TempData.merge({"Search" : Temp}, true)
-			if TempData["ID"] != "Home":
-				if User.Boards[TempData["ID"]]["Title"] != "":
-					User.emit_signal("SearchResultSend", TempData)
-					return true
-				else:
-					return false
-			else:
-				User.emit_signal("SearchResultSend", TempData)
-				return true
+		if self.Data[Query] is Array:
+			for i in self.Data[Query]:
+				Result = ReturnSearchResult(Query, Search, TempData, i, Temp)
 		else:
-			return false
+			Result = ReturnSearchResult(Query, Search, TempData, null, Temp)
+	return Result
+
+func ReturnSearchResult(Query, Search, TempData, TempValue = null, isTest = false):
+	var Temp : String = str(self.Data[Query])
+	if TempValue != null:
+		Temp = TempValue
+	Temp = Temp.to_lower()
+	if Temp.similarity(Search.to_lower()) >= User.SearchSen and !(TempData in User.SearchResults):
+		TempData.merge({"Search" : Temp, "Query" : Query}, true)
+		if TempData["ID"] != "Home":
+			if User.Boards[TempData["ID"]]["Title"] != "":
+				if !isTest:
+					User.emit_signal("SearchResultSend", TempData)
+				return true
+			else:
+				return false
+		else:
+			if !isTest:
+				User.emit_signal("SearchResultSend", TempData)
+			return true
 	else:
 		return false
 
@@ -175,10 +202,10 @@ func StoppedSelecting():
 	Action = ""
 
 func _draw() -> void:
-	if Selected and Settings.CanSelectCol:
+	if Selected and Settings.Data["CanSelectCol"]:
 		draw_rect(
 			Rect2(0, 0, size.x, size.y),
-			Settings.SelectCol,
+			Settings.Data["SelectCol"],
 			false,
 			4 / User.CamZoom.x,
 			true
@@ -187,9 +214,9 @@ func _draw() -> void:
 var InitialMousePos := Vector2.ZERO
 
 func _physics_process(delta: float) -> void:
-	if Input.is_action_just_pressed("SelectAll") and self.Data["ID"] == User.CurrentPage and !User.InFocus:
+	if Input.is_action_just_pressed("SelectAll") and self.Data["ID"] == Settings.Data["CurrentPage"] and !User.InFocus:
 		focus_entered()
-	if User.CurrentPage == self.Data["ID"]:
+	if Settings.Data["CurrentPage"] == self.Data["ID"]:
 		if Col != null:
 			Col.disabled = false
 	else:
@@ -251,17 +278,19 @@ func MouseMove(event : InputEventMouseMotion, vec):
 	var current_mouse = get_global_mouse_position()
 	var offset = current_mouse - vec
 	var NewPos = vec + (event.relative / User.CamZoom)
-	if Settings.GridSnap:
+	if Settings.Data["GridSnap"]:
 		NewPos = vec + offset
-		NewPos = NewPos.snapped(Vector2(Settings.GridSize, Settings.GridSize))
+		NewPos = NewPos.snapped(Vector2(Settings.Data["GridSize"], Settings.Data["GridSize"]))
 	return NewPos
 
 func FocusItem():
-	focus_entered(true)
+	if !Selected or !MultiSelected:
+		focus_entered(true)
 
 func AllFocusLost():
-	Canvas.SelectedCanvas = false
-	ext(true)
+	if Selected or MultiSelected:
+		Canvas.SelectedCanvas = false
+		ext(true)
 
 func ItemFocusLost():
 	pass
@@ -301,10 +330,11 @@ func ext(force = false):
 		User.emit_signal("ItemFocusLost")
 
 func focus_exited():
-	if (!User.MouseInCanvas or TechnicallyInFocus):
-		ext()
-	else :
-		TechnicallyInFocus = true
+	if Selected or MultiSelected:
+		if (!User.MouseInCanvas or TechnicallyInFocus):
+			ext()
+		else :
+			TechnicallyInFocus = true
 
 func Timeout() -> void:
 	Holding = true

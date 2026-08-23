@@ -2,11 +2,7 @@
 
 [ext_resource type="Script" uid="uid://1bciud8wf734" path="res://App/Assets/Scenes/Board/board.gd" id="1"]
 [ext_resource type="FontFile" uid="uid://wss58bpb7rd3" path="res://App/Assets/Fonts/0xProto/0xProtoNerdFont-Bold.ttf" id="3"]
-[ext_resource type="FontFile" uid="uid://cfo3bhqi4p5qu" path="res://App/Assets/Fonts/0xProto/0xProtoNerdFont-Regular.ttf" id="4"]
 [ext_resource type="PackedScene" uid="uid://8r3y5vbqek01" path="res://App/Components/CheckFocus/check_focus.tscn" id="6"]
-
-[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_mbg2k"]
-content_margin_left = 2.0
 
 [node name="Board" type="VBoxContainer" unique_id=1252903701]
 offset_right = 170.0
@@ -25,24 +21,6 @@ theme_override_fonts/font = ExtResource("3")
 theme_override_font_sizes/font_size = 26
 text = "Untitled Board"
 autowrap_mode = 2
-
-[node name="ID" type="Label" parent="New" unique_id=152037659]
-layout_mode = 1
-anchors_preset = -1
-anchor_left = 0.018058822
-anchor_top = 0.726
-anchor_right = 0.982059
-anchor_bottom = 0.9737895
-offset_left = -0.0699997
-offset_top = -0.0240021
-offset_right = 0.0499878
-offset_bottom = -0.0160065
-theme_override_fonts/font = ExtResource("4")
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBoxEmpty_mbg2k")
-text = "Getting ID..."
-vertical_alignment = 2
-metadata/_edit_use_anchors_ = true
 
 [node name="Cover" type="TextureRect" parent="New" unique_id=717075015]
 layout_mode = 1

@@ -11,10 +11,10 @@ var Data: = {
 	"ID": "Home", 
 	"Title": "", 
 	"TitleOn": true, 
-	"NoteOn": true,
-	"FontSize" : Settings.DefaultFontSize,
-	"TitleSize": Settings.DefaultTtileSize,
-	"ItemID" : ""
+	"FontSize" : Settings.Data["DefaultFontSize"],
+	"TitleSize": Settings.Data["DefaultTitleSize"],
+	"ItemID" : "",
+	"Tags" : []
 }
 
 var Options := [
@@ -29,12 +29,11 @@ func _ready() -> void :
 	initItem()
 	EditNotes(false)
 	UpdateValues(NotesText, "Note", "text")
-	RichText.text = NotesText.text
+	UpdateText()
 	UpdateValues($Title, "Title", "text")
 	UpdateValues($Title, "TitleOn", "visible")
 	ChangeFontSize(Has("FontSize"))
 	ChangeTitleSize(Has("TitleSize"))
-		
 	for i in self.get_children(true):
 		for j in i.get_children(true):
 			if j.has_signal("mouse_entered"):
@@ -73,9 +72,6 @@ func _process(delta: float) -> void :
 	Data["Note"] = NotesText.text
 	Data["Title"] = $Title.text
 	Data["TitleOn"] = $Title.visible
-	if !Editing:
-		Data["NoteOn"] = RichText.visible
-		RichText.text = NotesText.text
 	
 	if Input.is_action_just_pressed("Bold") and Input.is_action_pressed("Command") and Editing:
 		RichTextUpdate("b")
@@ -87,23 +83,46 @@ func EditNotes(GrabFocus = true):
 		NotesText.grab_focus()
 
 func _on_notes_focus_exited() -> void:
-	Editing = false
-	EditNotes(false)
+	if Editing:
+		UpdateText()
+		Editing = false
+		EditNotes(false)
+
+func UpdateText():
+	var Temptext : String = Data["Note"]
+	if Settings.Data["OverrideText"].size() >= 1:
+		for i in Settings.Data["OverrideText"]:
+			var Replacement = (
+				HasCommand("url=", i["Command"]) +
+				HasCommand("color=", i["Color"]) +
+				HasCommand("", i["Bold"]) +
+				#MIDDLE/ THE TEXT BEING REPLACED
+				i["Text"] +
+				# END OF TEXT
+				HasCommand("b", i["Bold"], true) +
+				HasCommand("color", i["Color"], true) +
+				HasCommand("url", i["Command"], true))
+			Temptext = Temptext.replace(i["Text"], 
+				Replacement
+				)
+	RichText.text = Temptext
+
+func HasCommand(Code : String, text : String, end = false):
+	var output = "[" + Code + text + "]"
+	if end:
+		output = "[/" + Code + "]"
+	if text == "":
+		output = ""
+	return output
 
 func _on_text_focus_entered() -> void:
 	Editing = true
 	EditNotes(false)
 
 func _on_text_meta_clicked(meta ) -> void:
-	meta = str(meta).split(':')
-	meta[0] = meta[0].to_lower()
-	if meta[0].begins_with("goto") and meta.size() >= 2:
-		User.emit_signal("SearchByID", meta[1])
-	else:
+	meta = str(meta).to_lower().split('/')
+	if !Commands.CheckCommand(meta):
 		OS.shell_open(str(meta))
-
-func RecieveByID(Data : Dictionary):
-	System.GoTo({"ID" : Data["ID"], "Pos" : Data["Pos"]})
 
 func RichTextUpdate(text, additonal = ""):
 	if NotesText.get_selected_text():

@@ -1,3 +1,29 @@
+Changelog for: v2
+Added:
+- Tags: Tags can be assigned to items (can also be searched for)
+- Camera Transition: The camera will smoothly adjust it's position and zoom when changing between boards
+- Saving last accessed board
+
+Improved:
+- Search:
+	Search results return with a better format: Board ID, Query and the search result of the item with only the first 100 characters
+	Going to a searched item now positions the camera at the center of the item instead of it's position
+- Settings Saving: The structure of how settings were previously saved has been updated, however this unfortunately breaks the previous settings file
+- Quick Options: all 3 buttons are can now be assigned a quick option, except for settings for accessing
+- Toolbar: the visibility state of the toolbar is saved
+- Calendar and Settings default zoom and positons to fit the entire screen
+
+Fixed:
+- Erasing all not working
+- Board not changing properly to home when erasing data
+- Item performance improved when clicking off the item
+
+Removed:
+- Removed showing the Board ID
+- Preview Notes option from settings
+- Canvas Button from settings
+- Calendar button from settings
+
 Changelog for: v1.7
 - Ctrl + A to select all the items im the current board
 - Items can be de-selected when multi-selecting

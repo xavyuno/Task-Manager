@@ -13,12 +13,12 @@ func _ready() -> void :
 
 func _physics_process(delta: float) -> void:
 	if Input.is_action_just_pressed("PreviousBoard"):
-		if User.Boards.has(PrevID):
-			User.emit_signal("ChangeBoard", PrevID, PrevTitle, "", User.Boards[PrevID]["CamPos"])
-		else :
-			User.emit_signal("ChangeBoard", "Home", "Home", "", Settings.CamPosBoard)
+		if PrevID != "":
+			System.SwitchBoard(PrevID, PrevTitle)
+		else:
+			System.SwitchBoard("Home")
 
-func ChangedBoard(Board: String, Title: String, ID = "", CamPos = Vector2(640, 352)):
+func ChangedBoard(Board: String, Title: String, ID = "", CamPos = Vector2(640, 352), CamZoom = 1):
 	User.PreviousPage = PrevID
 	User.PreviousTitle = PrevTitle
 	User.emit_signal("AllFocusLost")
@@ -49,7 +49,7 @@ func ChangedBoard(Board: String, Title: String, ID = "", CamPos = Vector2(640, 3
 			PrevID = "Home"
 			home.visible = true
 			previous.visible = false
-	if Board.similarity("Home") == 1:
+	if Settings.Data["CurrentPage"] == "Home":
 		$NewBoard.visible = false
 		previous.visible = false
 		home.visible = false
@@ -61,7 +61,7 @@ func ChangedBoard(Board: String, Title: String, ID = "", CamPos = Vector2(640, 3
 		$NewBoard.visible = true
 
 func _on_home_pressed() -> void:
-	User.emit_signal("ChangeBoard", "Home", "Home", "", Settings.CamPosBoard)
+	System.SwitchBoard("Home")
 
 func _on_previous_pressed() -> void:
-	User.emit_signal("ChangeBoard", PrevID, PrevTitle, "", User.Boards[PrevID]["CamPos"])
+	System.SwitchBoard(PrevID, PrevTitle)

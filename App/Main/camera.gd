@@ -8,6 +8,11 @@ var DragSelecting := false
 var DragSelectPos := Vector2.ZERO
 var ZoomScale = Vector2(0.01, 0.01)
 
+#Smooth zoom and positon to designated place
+var ToPos : Vector2
+var ToZoom : Vector2
+var Travelled := true
+
 #Drawing
 var StartPos = Vector2.ZERO
 var TempObj = null
@@ -18,34 +23,44 @@ func _ready() -> void :
 	User.connect("ChangeBoard", Callable(self, "ChangeBoard"))
 
 func SettingsChanged():
-	$ClearFocus.self_modulate = Settings.BackgroundCol
+	$ClearFocus.self_modulate = Settings.Data["BackgroundCol"]
 
 func ResetCam():
 	position = Vector2(640, 352)
 	zoom = Vector2(1, 1)
 
-func ChangeBoard(Board: String, Title: String, ID = "", CamPos = Vector2(640, 352)):
+func ChangeBoard(Board: String, Title: String, ID = "", CamPos = Vector2(640, 352), CamZoom = Vector2(1, 1)):
 	User.PreviousPos = position
-	position = CamPos
+	ToPos = CamPos
+	ToZoom = CamZoom if typeof(CamZoom) == TYPE_VECTOR2 else Vector2(1,1)
+	Travelled = false
+	
 
 func _draw() -> void:
-	if User.DragSelecting and !get_node("../Boards/" + User.CurrentPage).is_in_group("NoCanvas"):
+	if User.DragSelecting and !get_node("../Boards/" + Settings.Data["CurrentPage"]).is_in_group("NoCanvas"):
 		draw_polyline(
 				System.CreateRectangle(DragSelectPos, get_local_mouse_position()),
-			Settings.DragCol,
+			Settings.Data["DragCol"],
 			2 / User.CamZoom.x
 		)
 
 func _physics_process(delta: float) -> void :
+	if !Travelled:
+		if (position.distance_to(ToPos) > 1) or (zoom.distance_to(ToZoom) > 1):
+			position = lerp(position, ToPos, 0.21)
+			zoom = lerp(zoom, ToZoom, 0.21)
+		else:
+			Travelled = true
+
 	match Canvas.Action:
 		"Create":
 			if Input.is_action_just_pressed("Click"):
 				Canvas.Canvases += 1
 				StartPos = get_global_mouse_position()
 				TempObj = preload("res://App/Assets/Scenes/Canvas/Canvas.tscn").instantiate()
-				get_node("../Boards/" + User.CurrentPage).add_child(TempObj)
+				get_node("../Boards/" + Settings.Data["CurrentPage"]).add_child(TempObj)
 				TempObj.Data["ID"] = Canvas.Canvases
-				TempObj.Data["ParentID"] = User.CurrentPage
+				TempObj.Data["ParentID"] = Settings.Data["CurrentPage"]
 			if Input.is_action_pressed("Click") and TempObj:
 				TempObj.position = StartPos
 				TempObj.size = get_global_mouse_position() - StartPos
@@ -56,18 +71,12 @@ func _physics_process(delta: float) -> void :
 	
 	User.CamZoom = zoom
 	User.CamPos = position
-	match User.CurrentPage:
-		"Settings":
-			Settings.CamPosSettings = position
-		"Home":
-			Settings.CamPosBoard = position
-		"Calendar":
-			Settings.CamPosCalendar = position
-		"Canvas":
-			Settings.CamPosCanvas = position
+	if Settings.Data["CurrentPage"] in ["Settings", "Home", "Calendar"]:
+		Settings.Data["CamPos" + Settings.Data["CurrentPage"]] = position
+		Settings.Data["CamZoom" + Settings.Data["CurrentPage"]] = zoom
 
 	if Input.is_action_just_pressed("Special") and CamConditions():
-		Settings.GridSnap = !Settings.GridSnap
+		Settings.Data["GridSnap"] = !Settings.Data["GridSnap"]
 	if Input.is_action_just_pressed("ResetCam"):
 		ResetCam()
 	if Input.is_action_pressed("Drag") and CamConditions():
@@ -83,7 +92,7 @@ func _physics_process(delta: float) -> void :
 	if Input.is_action_pressed("ZoomOut") and zoom.x >= 0.1 and CamConditions():
 		zoom -= ZoomScale
 	
-	if Input.is_action_pressed("Click") and User.DragSelecting and !get_node("../Boards/" + User.CurrentPage).is_in_group("NoCanvas"):
+	if Input.is_action_pressed("Click") and User.DragSelecting and !get_node("../Boards/" + Settings.Data["CurrentPage"]).is_in_group("NoCanvas"):
 		drag.get_node("CollisionPolygon2D").polygon = System.CreateRectangle(DragSelectPos, get_local_mouse_position())
 	if Input.is_action_just_pressed("Click") and !User.MouseInCanvas and !User.InFocus:
 		DragSelectPos = get_local_mouse_position()
@@ -107,13 +116,13 @@ func _process(delta: float) -> void :
 
 func _input(event: InputEvent) -> void :
 	if event is InputEventMouseButton:
-		if event.button_index == MOUSE_BUTTON_WHEEL_UP and zoom.x <= 10 and CamConditions():
+		if event.button_index == MOUSE_BUTTON_WHEEL_UP and zoom.x < 10 and CamConditions():
 			zoom += ZoomScale
-		if event.button_index == MOUSE_BUTTON_WHEEL_DOWN and zoom.x >= 0.1 and CamConditions():
+		if event.button_index == MOUSE_BUTTON_WHEEL_DOWN and zoom.x > 0.1 and CamConditions():
 			zoom -= ZoomScale
 	if event is InputEventMouseMotion:
 		if Dragging:
-			position += - event.relative / User.CamZoom.clamp(Vector2(0, 0), Vector2(10, 10))
+			position += - event.relative / User.CamZoom
 
 
 func _on_drag_body_entered(body: Node2D) -> void:

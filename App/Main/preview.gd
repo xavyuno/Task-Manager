@@ -8,7 +8,7 @@ func _process(delta: float) -> void :
 	global_position = User.MousePos
 
 func StartedDragging():
-	if User.CurrentPage.similarity(get_parent().name) < 1:
+	if Settings.Data["CurrentPage"].similarity(get_parent().name) < 1:
 		return
 	var obj = User.DraggedObject.instantiate()
 	if obj.Data.has("Board"):

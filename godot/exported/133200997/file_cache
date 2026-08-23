@@ -1,5 +1,5 @@
-res://addons/DevTasks/task.tscn::9f67db45dba58d3e4100973ed2075af9::1786751297::res://godot/exported/133200997/export-d9cbb5d0cf4904af26afeead1cc8afd7-task.scn
-res://addons/DevTasks/Todo.tscn::176b5252e52651e0e888a080480a8c86::1786751303::res://godot/exported/133200997/export-332c5b20708546aad6c26cf672c15068-Todo.scn
+res://addons/DevTasks/task.tscn::ca67d7841cff6b7a2ff8d979c21a7e6d::1787014964::res://godot/exported/133200997/export-d9cbb5d0cf4904af26afeead1cc8afd7-task.scn
+res://addons/DevTasks/Todo.tscn::176b5252e52651e0e888a080480a8c86::1787014906::res://godot/exported/133200997/export-332c5b20708546aad6c26cf672c15068-Todo.scn
 res://App/Assets/Fonts/Dynamic/Proto/Proto.tres::dbbb7469d93247de5648806c88efe141::1780625873::res://godot/exported/133200997/export-4dcd5e06319a71ed49715497604d4567-Proto.res
 res://App/Assets/Scenes/Column/Column.tscn::6f5f8fd779e8c621d412008e43a3b048::1783726464::res://godot/exported/133200997/export-cc66f02a61835dbc430b82e5763faf40-Column.scn
 res://App/Assets/Scenes/File/File.tscn::14ffd0ce4b4b8e943d033a05d58ce8e4::1786749162::res://godot/exported/133200997/export-61bdb48756f12d64a9d01a77866bcdff-File.scn
@@ -19,9 +19,9 @@ res://App/Components/ObjectData/data.tscn::f2d043b8a9db8a15901b80b48bd10d14::178
 res://App/Components/Options/options_holder.tscn::a53ccf55063c88d558d348bef00ac0f5::1783199656::res://godot/exported/133200997/export-c7c5dcfdf9225ea7e668f347a312cb70-options_holder.scn
 res://App/Components/Ratio/ratio.tscn::68ca75be39c810b7b787e867bed9073f::1780625873::res://godot/exported/133200997/export-67227196c8a6d9d8f43d7725b5302dbc-ratio.scn
 res://App/Components/SelectObject/select_object.tscn::181e9b0034b9e78d1cbf2fb13a15c757::1783199656::res://godot/exported/133200997/export-2e43c5b1f00dc82eba3b3b285c9c1f99-select_object.scn
-res://App/Main/main.tscn::a45de09764f06203348a227ccf5a6052::1787006970::res://godot/exported/133200997/export-265fa046f62905255ea566668c2b252f-main.scn
+res://App/Main/main.tscn::0adbdece37123a30fa76a54f01c841a8::1787019004::res://godot/exported/133200997/export-265fa046f62905255ea566668c2b252f-main.scn
 res://App/Components/Day/day.tscn::1c527b43fb3c8e4f13a5154291adff72::1783809373::res://godot/exported/133200997/export-c0ee44e865f72888f8523bf49fe9bc2d-day.scn
-res://App/Assets/Scenes/Board/Board.tscn::fb60b9b4ab59768f39d598947cd7b4fa::1786748025::res://godot/exported/133200997/export-e5f500c0c690f13d60e8aa180132ceda-Board.scn
+res://App/Assets/Scenes/Board/Board.tscn::fd91953ed18cc4b0a10679c7702b16f8::1787007631::res://godot/exported/133200997/export-e5f500c0c690f13d60e8aa180132ceda-Board.scn
 res://App/Components/Keybind/keybind.tscn::4e525c115129809280d9a060f6a2d0b1::1783731573::res://godot/exported/133200997/export-b99d4b9310dc6fc704fa0f23c6d2c681-keybind.scn
 res://App/Main/keybind_event.tscn::0f151cddb3128869a012c05e081cca1b::1783731681::res://godot/exported/133200997/export-1e19234a25e526c788e23b976090bf3e-keybind_event.scn
 res://App/Components/Calendar/calendar_event.tscn::94722c68740da6be75858225ec5cab0d::1783808203::res://godot/exported/133200997/export-34c1a8f6fc1585692502e444d1a1b021-calendar_event.scn
@@ -30,3 +30,10 @@ res://App/Assets/Scenes/Canvas/draw_manager.tscn::11a1e9bcac3bad1c8604ec564ad82c
 res://App/Assets/Scenes/Canvas/pixel_block.tscn::b0c7f1ed8f64a40de9ded9c2f22ee85c::1787000802::res://godot/exported/133200997/export-5c0f17b32405be2c1b1e9396319ab41e-pixel_block.scn
 res://App/Assets/Scenes/TestEnv/test_env.tscn::e5e24f40b4c9842aeec62fa82c08e776::1786743153::res://godot/exported/133200997/export-392e1cae03463c06ffd8c53eaf8ad450-test_env.scn
 res://App/Components/Warning/warning.tscn::325e8654279f22a99ae3a66b28c62853::1786747365::res://godot/exported/133200997/export-43dbf2ca92406a30280ce92f53a3a609-warning.scn
+res://addons/godot-firebase/database/firebase_database_reference.tscn::274ad7589ccf5f3fcd30bda224d314c4::1787012807::res://godot/exported/133200997/export-0ef69a81e527c1857d021929654998b9-firebase_database_reference.scn
+res://addons/godot-firebase/database/firebase_once_database_reference.tscn::8907a93c4c88d070d0ca646603304366::1787007832::res://godot/exported/133200997/export-a3a60f3103ba469285ab260062b5d4b6-firebase_once_database_reference.scn
+res://addons/godot-firebase/firebase/firebase.tscn::89982fcb99f688c066fd2090da65d308::1787007832::res://godot/exported/133200997/export-3c03e2f0e0b3ccc8935ab462dd7f31f1-firebase.scn
+res://addons/godot-firebase/firestore/firestore_listener.tscn::e3dbcd1372d30c4495e4095d88634226::1787007832::res://godot/exported/133200997/export-a7417b6b21b8dd830dc5e902752bc868-firestore_listener.scn
+res://addons/godot-firebase/queues/queueable_http_request.tscn::e3cb8c9aa327ead556794dcb348fd16b::1787007832::res://godot/exported/133200997/export-5d563975a4c3de756e6cbaedaa77fb19-queueable_http_request.scn
+res://addons/godot-firebase/remote_config/firebase_remote_config.tscn::e7fe603ecb8850638123f7f813069037::1787007832::res://godot/exported/133200997/export-69f609f8cf119fd685a73f12eb22cee9-firebase_remote_config.scn
+res://addons/http-sse-client/HTTPSSEClient.tscn::b57773a7a6ceb117be070e307d80c39c::1787007832::res://godot/exported/133200997/export-b09c51968436d4a692285ed3f647cfa0-HTTPSSEClient.scn

@@ -16,7 +16,7 @@ func _ready() -> void:
 		butt.connect("pressed", Pressed.bind(butt.text))
 
 func _process(delta: float) -> void:
-	if get_node("../../../Boards/" + User.CurrentPage).is_in_group("NoCanvas"):
+	if get_node("../../../Boards/" + Settings.Data["CurrentPage"]).is_in_group("NoCanvas"):
 		visible = false
 	else:
 		visible = true
@@ -47,10 +47,12 @@ func AddResults():
 			Butt.text_overrun_behavior = TextServer.OVERRUN_TRIM_WORD_ELLIPSIS
 			Butt.custom_minimum_size = Vector2(172, 0)
 			results.add_child(Butt)
+			var BoardID = ""
 			if i["ID"] != "Home":
-				Butt.tooltip_text = User.Boards[i["ID"]]["Title"] + ": \n" + i["Search"]
+				BoardID = User.Boards[i["ID"]]["Title"]
 			else:
-				Butt.tooltip_text = "Home: \n" + i["Search"]
+				BoardID = "Home\n"
+			Butt.tooltip_text = "Board: " + BoardID + "\nQuery: " + i["Query"] + "\nResult: " + str(i["Search"]).left(100)
 			Butt.connect("pressed", System.GoTo.bind(i))
 	else:
 		results.visible = false

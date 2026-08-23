@@ -14,11 +14,11 @@ signal ItemFocusLost
 signal ChangedOptionsBar
 signal AllFocusLost
 signal SearchResultSend
-signal SearchByID
-signal RecieveByID
+signal SearchByQuery
 signal DeleteAllItemsByBoard
+signal ApplySaveFile
 
-var SearchQueries := ["Note:", "Title:", "ID:", "Board:", "Type:", "Dir:", "ItemID:"]
+var SearchQueries := ["Note:", "Title:", "ID:", "Board:", "Type:", "Dir:", "ItemID:", "Tags:"]
 var SearchResults := []
 var SearchSen := 0.5
 
@@ -34,14 +34,12 @@ var MouseInOpen := true
 
 var MousePos: Vector2
 var CamPos: Vector2
-var CamZoom: Vector2
+var CamZoom : Vector2
 var InFocus: = false
 var DragSelecting := false
 var DraggingObject: = false
 var DraggedObject: PackedScene
 
-var CurrentPage: = "Home"
-var PageTitle: = "Home"
 var PreviousPage: = "Home"
 var PreviousTitle: = "Home"
 var PreviousPos := Vector2.ZERO
@@ -55,7 +53,6 @@ var AllSameSelectedObjects = false
 var CopiedObject = null
 
 var LoadDur: = 0.05
-var PreviewingNotes := false
 var TotalItems := 0
 
 var TestingMode := false

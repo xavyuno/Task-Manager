@@ -27,9 +27,9 @@ func _notification(what: int) -> void:
 
 func GoTo(Info : Dictionary):
 	if Info["ID"] != "Home":
-		User.emit_signal("ChangeBoard", Info["ID"], User.Boards[Info["ID"]]["Title"], "", Info["Pos"])
+		User.emit_signal("ChangeBoard", Info["ID"], User.Boards[Info["ID"]]["Title"], "", Info["Pos"]+(Info["Size"]/2), User.Boards[Info["ID"]]["CamZoom"])
 	else:
-		User.emit_signal("ChangeBoard", "Home", "Home", "", Info["Pos"])
+		User.emit_signal("ChangeBoard", "Home", "Home", "", Info["Pos"]+(Info["Size"]/2), Settings.Data["CamZoomHome"])
 
 func SaveAll(test):
 	if User.TestingMode or Saving:
@@ -39,14 +39,18 @@ func SaveAll(test):
 	SaveStoreHistory()
 	SaveRemoveHistory()
 	SaveSettings()
-	#SaveCanvas()
 
 func BackupAll():
 	DirAccess.make_dir_absolute(MAINDIR + AUTOSAVELOC)
-	SaveSettings(AUTOSAVELOC, "AUTO")
-	SaveRemoveHistory(AUTOSAVELOC, "AUTO")
-	SaveStoreHistory(AUTOSAVELOC, "AUTO")
-	#SaveCanvas(AUTOSAVELOC, "AUTO")
+	var Date = Time.get_datetime_dict_from_system()
+	var Identifier = "_".join([Date.day, Date.month, Date.year])
+	var file = FileAccess.open(MAINDIR + AUTOSAVELOC + Identifier + ".BACKUP", FileAccess.WRITE)
+	file.store_var({
+		"Settings" : Settings.Data,
+		"Items" : User.StoredHistory,
+		"History" : User.RemovedHistory
+	})
+	file.close()
 
 func LoadBackups():
 	for i in [
@@ -87,17 +91,19 @@ func SaveStoreHistory(start = "", end = ""):
 		fileSave.store_var(User.StoredHistory, true)
 		fileSave.close()
 
-func SaveCanvas(start = "", end = ""):
-	var fileSave = FileAccess.open(MAINDIR + start + CANVASFILE + end + EXTENSION, FileAccess.WRITE)
-	if fileSave:
-		fileSave.store_var(Canvas.SavedCanvas, true)
-		fileSave.close()
-
 func SaveSettings(start = "", end = ""):
 	var fileSave = FileAccess.open(MAINDIR + start + SETTINGSFILE + end + EXTENSION, FileAccess.WRITE)
 	if fileSave:
-		fileSave.store_var(Settings.GetSettings(), true)
+		fileSave.store_var(Settings.Data, true)
 		fileSave.close()
+
+func SwitchBoard(Page, Title = ""):
+	if Title == "":
+		Title = Page
+	if User.Boards.has(Page):
+		User.emit_signal("ChangeBoard", Page, Title, "", User.Boards[Page]["CamPos"], User.Boards[Page]["CamZoom"])
+	else :
+		User.emit_signal("ChangeBoard", Page, Title, "", Settings.Data["CamPos" + Page], Settings.Data["CamZoom" + Page])
 
 func SaveRemoveHistory(start = "", end = ""):
 	var file = FileAccess.open(MAINDIR + start + HISTORYFILE + end + EXTENSION , FileAccess.WRITE)
@@ -149,11 +155,11 @@ func AddObject(item, atMouse = true, parent = null, extraData = {}, emit = true)
 		get_tree().current_scene.get_node("Boards/" + parent).call_deferred("add_child", obj)
 		obj.Data["ID"] = parent
 	else:
-		if !get_tree().current_scene.get_node("Boards/" + User.CurrentPage):
+		if !get_tree().current_scene.get_node("Boards/" + Settings.Data["CurrentPage"]):
 			get_tree().current_scene.get_node("Boards/Home").call_deferred("add_child", obj)
 		else:
-			get_tree().current_scene.get_node("Boards/" + User.CurrentPage).call_deferred("add_child", obj)
-		obj.Data["ID"] = User.CurrentPage
+			get_tree().current_scene.get_node("Boards/" + Settings.Data["CurrentPage"]).call_deferred("add_child", obj)
+		obj.Data["ID"] = Settings.Data["CurrentPage"]
 	if GetSpecificType(obj, [Button, Control, TextEdit]):
 		obj.position = User.MousePos
 	if !extraData.is_empty() and (extraData["Pos"] != Vector2.ZERO and extraData["Size"] != Vector2.ZERO):
@@ -161,6 +167,17 @@ func AddObject(item, atMouse = true, parent = null, extraData = {}, emit = true)
 		obj.size = extraData["Size"]
 	User.emit_signal("ObjectAdded", obj.Data)
 
+func GetOrNull(Data : Dictionary, Comparison, Default, Type = null):
+	if Data.has(Comparison):
+		if Type != null:
+			if typeof(Data[Comparison]) == Type:
+				return Data[Comparison]
+			else:
+				return Default
+		else:
+			return Data[Comparison]
+	else:
+		return Default
 
 func GetSpecificType(Item, TypeArray: Array):
 	var result = false
@@ -168,3 +185,35 @@ func GetSpecificType(Item, TypeArray: Array):
 		if typeof(Item) == typeof(i):
 			result = true
 	return result
+
+var Db_ref = null
+var DatabaseLoaded := false
+
+func encode(data):
+	return JSON.stringify(JSON.from_native(data, true))
+
+func decode(data):
+	return JSON.to_native(JSON.parse_string(data), true)
+
+func SaveOnline():
+	if Db_ref != null and DatabaseLoaded:
+		Db_ref.update(Settings.Data["Email"].split("@")[0], 
+		{
+			"StoredItems" : encode(User.StoredHistory),
+			"Settings" : encode(Settings.Data),
+			"History" : encode(User.RemovedHistory)
+		})
+
+func LoadOnline():
+	if Db_ref != null and DatabaseLoaded:
+		var FileData = [decode(Db_ref.get_data()[Settings.Data["Email"].split("@")[0]]["StoredItems"]),
+		decode(Db_ref.get_data()[Settings.Data["Email"].split("@")[0]]["History"]),
+		decode(Db_ref.get_data()[Settings.Data["Email"].split("@")[0]]["Settings"])]
+		var Files = [SAVEFILE, HISTORYFILE, SETTINGSFILE]
+	
+		for i in Files.size():
+			var fileSave = FileAccess.open(MAINDIR + Files[i] + EXTENSION, FileAccess.WRITE)
+			if fileSave:
+				fileSave.store_var(FileData[i], true)
+				fileSave.close()
+		User.emit_signal("ApplySaveFile")

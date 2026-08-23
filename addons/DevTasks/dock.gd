@@ -47,7 +47,7 @@ func Save():
 	var TempDevTasks = {}
 	for i in tasks.get_child_count():
 		var taskinfo = tasks.get_child(i).get_node("Info").text
-		var value = tasks.get_child(i).get_node("Check").button_pressed
+		var value = tasks.get_child(i).get_node("Holder/Check").button_pressed
 		TempDevTasks.merge({taskinfo : value}, true)
 	var file = FileAccess.open(SaveFile, FileAccess.WRITE)
 	file.store_pascal_string(JSON.stringify(TempDevTasks, "\t", false, true))

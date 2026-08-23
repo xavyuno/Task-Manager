@@ -13,9 +13,7 @@ func _ready() -> void :
 	ver = ver.strip_edges(true, true)
 	ver = ver.strip_escapes()
 	$Version.text = "Version: " + ver.validate_filename()
-	var file = FileAccess.open("res://Updates.txt", FileAccess.READ)
-	$Changelog/ScrollContainer/Notes.text = file.get_as_text()
-	file.close()
+	
 
 
 func _physics_process(delta: float) -> void :
@@ -27,26 +25,25 @@ func _physics_process(delta: float) -> void :
 			$Holder/User/Update / Progress.value / $Holder/User/Update / Progress.max_value
 		)
 	$Holder/User/Update / Version.visible = Downloading
-	$Holder/Items/ItemLimit/TotalItems.text = "Total Items: " + str(User.TotalItems) + " / " + str(Settings.ItemLimit)
-	$Holder/Items/PreviewNotes.text = "Previewing Notes: On" if User.PreviewingNotes else "Previewing Notes: Off"
+	$Holder/Items/ItemLimit/TotalItems.text = "Total Items: " + str(User.TotalItems) + " / " + str(Settings.Data["ItemLimit"])
 
 func SettingsChanged():
-	$Holder/User/BGPicker.color = Settings.BackgroundCol
-	$Holder/Items/LoadDur.value = Settings.LoadDur
-	$Holder/Items/ItemLimit.value = Settings.ItemLimit
-	$Holder/User/Center.text = "Show center of board: On" if Settings.ShowCenter else "Show center of board: Off"
-	$Holder/User/Center.alignment = HORIZONTAL_ALIGNMENT_CENTER if Settings.ShowCenter else HORIZONTAL_ALIGNMENT_LEFT
-	$Holder/Items/LoadDur/Proload.text = "On" if Settings.ProgressiveLoading else "Off"
-	$Holder/Items/DefaultFontSize.value = Settings.DefaultFontSize
-	$Holder/Items/DefaultTitle.value = Settings.DefaultTtileSize
-	$Holder/User/TotalBoards.text = "Total Boards: " + str(Settings.TotalBoards)
-	$Holder/User/SelectColor.color = Settings.SelectCol
-	$Holder/User/SelectColor/On.text = "On" if Settings.CanSelectCol else "Off"
-	$Holder/User/DragColor.color = Settings.DragCol
-	$Holder/User/GridCol.color = Settings.GridCol
+	$Holder/User/BGPicker.color = Settings.Data["BackgroundCol"]
+	$Holder/Items/LoadDur.value = Settings.Data["LoadDur"]
+	$Holder/Items/ItemLimit.value = Settings.Data["ItemLimit"]
+	$Holder/User/Center.text = "Show center of board: On" if Settings.Data["ShowCenter"] else "Show center of board: Off"
+	$Holder/User/Center.alignment = HORIZONTAL_ALIGNMENT_CENTER if Settings.Data["ShowCenter"] else HORIZONTAL_ALIGNMENT_LEFT
+	$Holder/Items/LoadDur/Proload.text = "On" if Settings.Data["ProgressiveLoading"] else "Off"
+	$Holder/Items/DefaultFontSize.value = Settings.Data["DefaultFontSize"]
+	$Holder/Items/DefaultTitle.value = Settings.Data["DefaultTitleSize"]
+	$Holder/User/TotalBoards.text = "Total Boards: " + str(Settings.Data["TotalBoards"])
+	$Holder/User/SelectColor.color = Settings.Data["SelectCol"]
+	$Holder/User/SelectColor/On.text = "On" if Settings.Data["CanSelectCol"] else "Off"
+	$Holder/User/DragColor.color = Settings.Data["DragCol"]
+	$Holder/User/GridCol.color = Settings.Data["GridCol"]
 
 func _on_color_picker_button_color_changed(color: Color) -> void :
-	Settings.BackgroundCol = color
+	Settings.Data["BackgroundCol"] = color
 	Settings.emit_signal("SettingsChanged")
 
 func _on_project_dir_pressed() -> void :
@@ -56,7 +53,7 @@ func _on_project_link_pressed() -> void :
 	OS.shell_open("https://github.com/xavyuno/Task-Manager")
 
 func _on_update_pressed() -> void :
-	$Holder/User/Update / FileDialog.current_path = Settings.UpdatePath
+	$Holder/User/Update / FileDialog.current_path = Settings.Data["UpdatePath"]
 	$Holder/User/Update / FileDialog.popup(Rect2i(600, 600, 600, 600))
 
 func _on_download_request_completed(result: int, response_code: int, headers: PackedStringArray, body: PackedByteArray) -> void :
@@ -64,7 +61,7 @@ func _on_download_request_completed(result: int, response_code: int, headers: Pa
 	$Holder/User/Update / Info.text = "Update Finished!"
 	print("Retrieved Data")
 	if response_code == 200:
-		var file = FileAccess.open(Settings.UpdatePath, FileAccess.WRITE)
+		var file = FileAccess.open(Settings.Data["UpdatePath"], FileAccess.WRITE)
 		file.store_buffer(body)
 		file.close()
 		print("Update successful")
@@ -94,7 +91,7 @@ func _on_get_version_request_completed(result: int, response_code: int, headers:
 
 func _on_file_dialog_file_selected(path: String) -> void :
 	$Holder/User/Update / Info.text = "Getting Latest Version"
-	Settings.UpdatePath = path
+	Settings.Data["UpdatePath"] = path
 	$Holder/User/Update / GetVersion.request("https://raw.githubusercontent.com/xavyuno/Task-Manager/main/LatestVersion.txt")
 
 
@@ -102,7 +99,7 @@ func _on_notes_meta_clicked(meta: Variant) -> void:
 	OS.shell_open(str(meta))
 
 func _on_load_dur_value_changed(value: float) -> void:
-	Settings.LoadDur = value
+	Settings.Data["LoadDur"] = value
 
 func _on_submit_feedback_pressed() -> void:
 	if $Holder/User/Feedback.text == "":
@@ -117,48 +114,45 @@ func _on_submit_req_request_completed(result: int, response_code: int, headers: 
 		print("failed to submit feedback")
 
 func _on_item_limit_value_changed(value: float) -> void:
-	Settings.ItemLimit = value
+	Settings.Data["ItemLimit"] = value
 
 func _on_center_pressed() -> void:
-	Settings.ShowCenter = !Settings.ShowCenter
+	Settings.Data["ShowCenter"] = !Settings.Data["ShowCenter"]
 	Settings.emit_signal("SettingsChanged")
 
-func _on_preview_notes_pressed() -> void:
-	User.PreviewingNotes = !User.PreviewingNotes
-
 func _on_show_bar_pressed() -> void:
-	Settings.OptionsEnabled = !Settings.OptionsEnabled
+	Settings.Data["OptionsEnabled"] = !Settings.Data["OptionsEnabled"]
 	Settings.emit_signal("SettingsChanged")
 
 func _on_default_font_size_value_changed(value: float) -> void:
-	Settings.DefaultFontSize = int(value)
+	Settings.Data["DefaultFontSize"] = int(value)
 	Settings.emit_signal("SettingsChanged")
 
 func _on_default_title_value_changed(value: float) -> void:
-	Settings.DefaultTtileSize = int(value)
+	Settings.Data["DefaultTitleSize"] = int(value)
 	Settings.emit_signal("SettingsChanged")
 
 
 func _on_calendar_pressed() -> void:
-	User.emit_signal("ChangeBoard", "Calendar", "Calendar", "", User.CamPosCalendar)
+	System.SwitchBoard("Calendar")
 
 func _on_proload_pressed() -> void:
-	Settings.ProgressiveLoading
+	Settings.Data["ProgressiveLoading"] = !Settings.Data["ProgressiveLoading"]
 	Settings.emit_signal("SettingsChanged")
 
 
 func _on_bg_picker_2_color_changed(color: Color) -> void:
-	Settings.SelectCol = color
+	Settings.Data["SelectCol"] = color
 	Settings.emit_signal("SettingsChanged")
 
 
 func _on_on_pressed() -> void:
-	Settings.CanSelectCol = !Settings.CanSelectCol
+	Settings.Data["CanSelectCol"] = !Settings.Data["CanSelectCol"]
 	Settings.emit_signal("SettingsChanged")
 
 
 func _on_drag_color_color_changed(color: Color) -> void:
-	Settings.DragCol = color
+	Settings.Data["DragCol"] = color
 
 
 func _on_loadbackup_pressed() -> void:
@@ -178,12 +172,9 @@ func _input(event: InputEvent) -> void:
 		print(InputMap.action_get_events("Bold"))
 
 func _on_drag_color_2_color_changed(color: Color) -> void:
-	Settings.GridCol = color
+	Settings.Data["GridCol"] = color
 	Settings.emit_signal("SettingsChanged")
 
 
 func _on_grid_scale_value_changed(value: float) -> void:
-	Settings.GridSize = value * 16
-
-func _on_canvas_pressed() -> void:
-	User.emit_signal("ChangeBoard", "Canvas", "Canvas", "", User.CamPosCanvas)
+	Settings.Data["GridSize"] = value * 16

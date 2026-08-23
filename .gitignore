@@ -3,7 +3,7 @@
 /android/
 .exe/
 *.API
-
+*.env
 *.exe
 *.dll
 *.msi

@@ -11,10 +11,11 @@ var Data: = {
 	"ID": "Home", 
 	"TitleOn": true, 
 	"Title": "",
-	"FontSize" : Settings.DefaultFontSize,
-	"TitleSize": Settings.DefaultTtileSize,
+	"FontSize" : Settings.Data["DefaultFontSize"],
+	"TitleSize": Settings.Data["DefaultTitleSize"],
 	"ShowProgress" : true,
-	"ItemID" : 0
+	"ItemID" : "",
+	"Tags" : []
 }
 
 var Options := [
@@ -22,7 +23,7 @@ var Options := [
 	"Title",
 	"FontSize",
 	"TitleSize",
-	"ShowProgress"
+	"Progress"
 ]
 var TempTitleSize := 0
 

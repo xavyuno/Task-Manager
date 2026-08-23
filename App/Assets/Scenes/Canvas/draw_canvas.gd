@@ -12,7 +12,8 @@ var Data: = {
 	"Size": Vector2.ZERO, 
 	"ID": "Home", 
 	"ItemID" : "",
-	"Pixels" : {}
+	"Pixels" : {},
+	"Tags" : []
 }
 
 var Options := [
@@ -68,7 +69,7 @@ func Capture():
 	txt.save_png("user://CanvasImages/" + str(Total)  + ".png")
 	System.AddObject(preload("res://App/Assets/Scenes/File/File.tscn"),
 	false,
-	User.CurrentPage,
+	Settings.Data["CurrentPage"],
 	{
 		"Pos" : position,
 		"Size" : size,

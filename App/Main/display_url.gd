@@ -4,11 +4,11 @@ func _ready() -> void:
 	Settings.connect("SettingsChanged", Callable(self, "SettingsChanged"))
 
 func SettingsChanged():
-	$Key.text = Settings.UrlAPIKey
+	$Key.text = Settings.Data["UrlAPIKey"]
 
 func _on_hide_pressed() -> void:
 	$Key.secret = !$Key.secret
-	Settings.UrlAPIKey = $Key.text
+	Settings.Data["UrlAPIKey"] = $Key.text
 
 func _on_key_text_changed(new_text: String) -> void:
-	Settings.UrlAPIKey = new_text
+	Settings.Data["UrlAPIKey"] = new_text

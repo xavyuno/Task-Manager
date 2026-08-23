@@ -4,52 +4,23 @@ extends Control
 
 func _ready() -> void :
 	Init()
+	System.SwitchBoard(Settings.Data["CurrentPage"], Settings.Data["PageTitle"])
 
 func Init():
 	get_parent().visible = true
 	User.connect("ObjectAdded", Callable(self, "ObjAdded"))
 	User.connect("ObjectRemoved", Callable(self, "ObjRemoved"))
 	User.connect("ChangeBoard", Callable(self, "ChangedBoard"))
+	User.connect("ApplySaveFile", Callable(self, "ApplySaveFile"))
 
 	var Settingsfile = System.LoadFile(System.MAINDIR + System.SETTINGSFILE + System.EXTENSION)
 	if Settingsfile:
 		var data = Settingsfile
-		if !(data is Array):
+		if !(data is Dictionary):
 			print("Error loading settings File!")
 			User.TestingMode = true
 		else:
-			ValidateValue(data, 0, "BackgroundCol")
-			ValidateValue(data, 1, "UpdatePath")
-			ValidateValue(data, 2, "LoadDur")
-			ValidateValue(data, 3, "ItemLimit")
-			# ValidateValue(data, 4, "OptionsEnabled")
-			ValidateValue(data, 5, "ShowCenter")
-			ValidateValue(data, 6, "QuickOptions")
-			ValidateValue(data, 7, "DefaultFontSize")
-			ValidateValue(data, 8, "DefaultTitleSize")
-			ValidateValue(data, 9, "UrlAPIKey")
-			ValidateValue(data, 10, "ProgressiveLoading")
-			#ValidateValue(data, 11, "TotalBoards")
-			ValidateValue(data, 12, "SelectCol")
-			ValidateValue(data, 13, "CanSelectCol")
-			
-			var TempBinds = Settings.SavedKeybinds
-			ValidateValue(data, 14, "SavedKeybinds")
-			for j in TempBinds.keys():
-				if !Settings.SavedKeybinds.has(j):
-					Settings.SavedKeybinds.merge({j : []}, true)
-			if data.size() > 15:
-				User.SavedEvents = data[15]
-			ValidateValue(data, 16, "GridSize")
-			ValidateValue(data, 17, "GridCol")
-			if ValidateValue(data, 18, "CamPosBoard"):
-				var Pos = data[18]
-				User.emit_signal("ChangeBoard", "Home", "Home", "", Pos)
-			ValidateValue(data, 19, "CamPosSettings")
-			ValidateValue(data, 20, "CamPosCalendar")
-			ValidateValue(data, 21, "CamPosCanvas")
-			ValidateValue(data, 22, "WarnDeleteAllBoard")
-			
+			Settings.Data.merge(data, true)
 	Settings.emit_signal("SettingsChanged")
 	User.emit_signal("ChangedOptionsBar")
 
@@ -63,7 +34,7 @@ func Init():
 			User.RemovedHistory = data
 			for i in User.RemovedHistory:
 				if i["Type"] != "Line":
-					if Settings.ProgressiveLoading:
+					if Settings.Data["ProgressiveLoading"]:
 						await get_tree().create_timer(User.LoadDur).timeout
 					var img = get_node("Holder/ItemHolder/Items/" + i["Type"]).icon
 					history.add_item("Removed: " + JSON.stringify(i, "\t", false, true), img)
@@ -77,26 +48,37 @@ func Init():
 		else :
 			User.StoredHistory = data
 			for i in User.StoredHistory:
-				if !(i["Type"] in DirAccess.get_files_at("res://App/Assets/Scenes/")):
-					if Settings.ProgressiveLoading:
-						await get_tree().create_timer(User.LoadDur).timeout
-					if i["Type"] == "Board":
-						User.Boards.merge({i["Board"] : {"Title" : i["Title"], "ID" : i["ID"], "CamPos" : Vector2(640, 352)}}, true)
-					initObj(i, false)
+				if Settings.Data["ProgressiveLoading"]:
+					await get_tree().create_timer(User.LoadDur).timeout
+				if i["Type"] == "Board":
+					User.Boards.merge({
+						i["Board"] : {
+							"Title" : System.GetOrNull(i, "Title", ""),
+							"ID" : System.GetOrNull(i, "ID", ""),
+							 "CamPos" : System.GetOrNull(i, "CamPos", Vector2(640, 352)),
+							 "CamZoom" : System.GetOrNull(i, "CamZoom", Vector2(1, 1), TYPE_VECTOR2)
+							}}, true)
+				initObj(i, false)
 
 	User.StillLoading = false
-	if Settings.TotalBoards <= 0:
+	if Settings.Data["TotalBoards"] <= 0:
 		await get_tree().create_timer(6).timeout
 		for i in $"../../Boards".get_children():
-			if int(i.name) > Settings.TotalBoards:
-				Settings.TotalBoards = int(i.name) + 1
+			if int(i.name) > Settings.Data["TotalBoards"]:
+				Settings.Data["TotalBoards"] = int(i.name) + 1
 
-func ValidateValue(array: Array, index, parameter) -> bool:
-	if array.size() > index:
-		Settings.set(parameter, array[index])
-		return true
-	else :
-		return false
+func ApplySaveFile():
+	User.StillLoading = true
+
+	var boards = $"../../Boards"
+	for i in boards.get_children():
+		if !i.is_in_group("Protect"):
+			i.queue_free()
+	for i in boards.get_node("Home").get_children():
+		if !i.is_in_group("Protect"):
+			i.queue_free()
+
+	Init()
 
 func _physics_process(delta: float) -> void :
 	$Holder/History/Delete.visible = !$Holder/History/DeleteAll.visible
@@ -220,11 +202,11 @@ func _on_history_item_activated(index: int) -> void :
 		if history.get_item_text(index).begins_with("Removed: "):
 			Undo(User.RemovedHistory[index])
 
-func ChangedBoard(Board: String, Title: String, ID = "", CamPos = Vector2(640, 352)):
+func ChangedBoard(Board: String, Title: String, ID = "", CamPos = Vector2(640, 352), CamZoom = 1):
 	if get_node("../../Boards/" + Board).is_in_group("NoCanvas"):
 		visible = false
 	else:
-		visible = true
+		visible = Settings.Data["ToolbarVisible"]
 	
 	User.emit_signal("ItemFocusLost")
 
@@ -259,7 +241,6 @@ func _on_yes_pressed() -> void:
 	User.StoredHistory.clear()
 	User.RemovedHistory.clear()
 	User.Boards = {}
-	Canvas.Canvases = 0
 	System.SaveRemoveHistory()
 	System.SaveStoreHistory()
 	var boards = $"../../Boards"
@@ -269,7 +250,7 @@ func _on_yes_pressed() -> void:
 	for i in boards.get_node("Home").get_children():
 		if !i.is_in_group("Protect"):
 			i.queue_free()
-	User.emit_signal("ChangeBoard", "Home")
+	User.emit_signal("ChangeBoard", "Home", "Home", "", Settings.CamPosHome, Settings.CamZoomHome)
 	$Holder/History/DeleteAll.visible = false
 	UpdateHistory()
 

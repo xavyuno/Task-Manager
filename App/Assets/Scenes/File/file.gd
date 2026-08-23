@@ -7,7 +7,8 @@ var Data: = {
 	"ID": "Home", 
 	"Dir": "",
 	"CachedImage" : null,
-	"ItemID" : 0
+	"ItemID" : "",
+	"Tags" : []
 }
 
 var Options := [
