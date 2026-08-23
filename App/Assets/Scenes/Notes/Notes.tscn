@@ -56,6 +56,7 @@ scroll_smooth = true
 scroll_past_end_of_file = true
 scroll_fit_content_height = true
 caret_blink = true
+caret_mid_grapheme = true
 highlight_all_occurrences = true
 code_completion_enabled = true
 indent_automatic = true
@@ -64,6 +65,10 @@ auto_brace_completion_highlight_matching = true
 
 [node name="CheckFocus" parent="ScrollContainer/Notes" unique_id=356332501 node_paths=PackedStringArray("par") instance=ExtResource("6")]
 par = NodePath("..")
+
+[node name="Display" type="Control" parent="." unique_id=1525784160]
+show_behind_parent = true
+layout_mode = 2
 
 [connection signal="focus_entered" from="Text" to="." method="_on_text_focus_entered"]
 [connection signal="meta_clicked" from="Text" to="." method="_on_text_meta_clicked"]

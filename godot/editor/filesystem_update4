@@ -1,0 +1,7 @@
+res://App/Assets/Scenes/Notes/Notes.tscn
+res://App/Assets/Scenes/Notes/notes.gd
+res://Updates.txt
+res://App/Main/main.tscn
+res://Global/User/Commands.gd
+res://Global/User/User.gd
+res://App/Main/nodes.gd
